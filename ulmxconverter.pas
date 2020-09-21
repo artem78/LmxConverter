@@ -10,16 +10,16 @@ uses
 
 type
 
-  { TForm1 }
+  { TMainForm }
 
-  TForm1 = class(TForm)
-    Button1: TButton;
-    Button2: TButton;
-    Edit1: TEdit;
-    OpenDialog1: TOpenDialog;
+  TMainForm = class(TForm)
+    ChooseLMXButton: TButton;
+    ConvertButton: TButton;
+    LMXFilePath: TEdit;
+    OpenDialog: TOpenDialog;
     OutpuFormatRadioGroup: TRadioGroup;
-    procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure ChooseLMXButtonClick(Sender: TObject);
+    procedure ConvertButtonClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -27,21 +27,21 @@ type
   end;
 
 var
-  Form1: TForm1;
+  MainForm: TMainForm;
 
 implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TMainForm }
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TMainForm.ChooseLMXButtonClick(Sender: TObject);
 begin
-  if OpenDialog1.Execute then;
-     Edit1.Text:=OpenDialog1.FileName;
+  if OpenDialog.Execute then;
+     LMXFilePath.Text:=OpenDialog.FileName;
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
   lmx, kml: TXMLDocument;
   landmarks_list : TDOMNodeList;
@@ -53,8 +53,8 @@ var
   kml_root, kml_doc, kml_folder, kml_placemark, kml_placemark_point,
     kml_placemark_name, kml_placemark_coords: TDOMNode;
 begin
-  //new_file_name := UTF8Copy( Edit1.Text, 0, Length(Edit1.Text)-3) + 'kml';
-  kml_file_name := ExtractFileNameWithoutExt(Edit1.Text) + '.kml';
+  //new_file_name := UTF8Copy( LMXFilePath.Text, 0, Length(LMXFilePath.Text)-3) + 'kml';
+  kml_file_name := ExtractFileNameWithoutExt(LMXFilePath.Text) + '.kml';
   kml := TXMLDocument.Create;
   kml_root := kml.CreateElement('kml');
   TDOMElement(kml_root).SetAttribute('xmlns', 'http://earth.google.com/kml/2.0');
@@ -64,7 +64,7 @@ begin
   kml_folder := kml.CreateElement('Folder');
   kml_doc.AppendChild(kml_folder);
 
-  ReadXMLFile(lmx, Edit1.Text);
+  ReadXMLFile(lmx, LMXFilePath.Text);
   try
     try
       landmarks_list := lmx.DocumentElement.GetElementsByTagName('lm:landmark');

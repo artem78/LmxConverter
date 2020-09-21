@@ -1,9 +1,9 @@
-object Form1: TForm1
+object MainForm: TMainForm
   Left = 0
   Height = 112
   Top = 0
   Width = 520
-  ActiveControl = Button1
+  ActiveControl = ChooseLMXButton
   BorderStyle = bsDialog
   Caption = 'LMX Converter'
   ClientHeight = 112
@@ -316,27 +316,27 @@ object Form1: TForm1
   Position = poDesktopCenter
   LCLVersion = '1.6.0.4'
   Visible = False
-  object Button1: TButton
+  object ChooseLMXButton: TButton
     Left = 374
     Height = 25
     Top = 8
     Width = 139
     Anchors = [akTop, akRight]
     Caption = 'Choose LMX file'
-    OnClick = Button1Click
+    OnClick = ChooseLMXButtonClick
     TabOrder = 0
   end
-  object Button2: TButton
+  object ConvertButton: TButton
     Left = 374
     Height = 25
     Top = 72
     Width = 139
     Anchors = [akRight, akBottom]
     Caption = 'Convert'
-    OnClick = Button2Click
+    OnClick = ConvertButtonClick
     TabOrder = 1
   end
-  object Edit1: TEdit
+  object LMXFilePath: TEdit
     Left = 8
     Height = 23
     Top = 8
@@ -368,7 +368,7 @@ object Form1: TForm1
     )
     TabOrder = 3
   end
-  object OpenDialog1: TOpenDialog
+  object OpenDialog: TOpenDialog
     Filter = 'LMX|*.lmx'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
     left = 248
