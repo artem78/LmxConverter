@@ -90,12 +90,12 @@ begin
 
       WriteXMLFile(kml, kml_file_name);
 
-      ShowMessage('Обработано!');
+      ShowMessage('Done!');
     except
-      //on e: Exception do ShowMessage('Ошибка!' + #13 + #10 + #13 + #10 + String(e)) ;
-      on e: Exception do ShowMessage('Ошибка!') ;
+      //on e: Exception do ShowMessage('Error!' + #13 + #10 + #13 + #10 + String(e)) ;
+      on e: Exception do ShowMessage('Error!') ;
     {else
-      ShowMessage('Обработано!');}
+      ShowMessage('Done!');}
     end;
 
   finally

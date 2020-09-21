@@ -5,7 +5,7 @@ object Form1: TForm1
   Width = 305
   ActiveControl = Button1
   BorderStyle = bsSingle
-  Caption = 'LMX Конвертер'
+  Caption = 'LMX Converter'
   ClientHeight = 98
   ClientWidth = 305
   Icon.Data = {
