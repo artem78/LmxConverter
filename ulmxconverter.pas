@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls,  laz2_DOM,  laz2_XMLRead{, LCLProc}, laz2_XMLWrite  ;
+  StdCtrls, ExtCtrls,  laz2_DOM,  laz2_XMLRead{, LCLProc}, laz2_XMLWrite  ;
 
 type
 
@@ -17,6 +17,7 @@ type
     Button2: TButton;
     Edit1: TEdit;
     OpenDialog1: TOpenDialog;
+    OutpuFormatRadioGroup: TRadioGroup;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
   private
