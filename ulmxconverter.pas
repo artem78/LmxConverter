@@ -53,6 +53,17 @@ var
   kml_root, kml_doc, kml_folder, kml_placemark, kml_placemark_point,
     kml_placemark_name, kml_placemark_coords: TDOMNode;
 begin
+  // Some checks before
+  if LMXFilePath.Text = '' then
+     Exit; // Nothing to do
+
+  if not FileExists(LMXFilePath.Text) then
+  begin
+    MessageDlg(Format('"%s" is not a valid input file!', [LMXFilePath.Text]), mtError, [mbOK], 0);
+    Exit;
+  end;
+
+
   //new_file_name := UTF8Copy( LMXFilePath.Text, 0, Length(LMXFilePath.Text)-3) + 'kml';
   kml_file_name := ExtractFileNameWithoutExt(LMXFilePath.Text) + '.kml';
   kml := TXMLDocument.Create;
