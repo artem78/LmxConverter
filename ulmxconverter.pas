@@ -50,10 +50,10 @@ var
   landmark: TDOMNode;
   i: integer;
   //lon, lat: Double;
-  name_, lat, lon, alt: String;
+  name_, lat, lon, alt, descr: String;
   kml_file_name: String;
   kml_root, kml_doc, kml_folder, kml_placemark, kml_placemark_point,
-    kml_placemark_name, kml_placemark_coords, alt_node: TDOMNode;
+    kml_placemark_name, kml_placemark_descr, kml_placemark_coords, alt_node: TDOMNode;
 begin
   // Some checks before
   if LMXFilePath.Text = '' then
@@ -88,6 +88,7 @@ begin
             begin
               landmark := landmarks_list[i];
               name_ := landmark.FindNode('lm:name').TextContent;
+              descr := landmark.FindNode('lm:description').TextContent;
               lat := landmark.FindNode('lm:coordinates').FindNode('lm:latitude').TextContent;
               lon := landmark.FindNode('lm:coordinates').FindNode('lm:longitude').TextContent;
               alt := '0';
@@ -99,6 +100,13 @@ begin
               kml_placemark_name := kml.CreateElement('name');
               kml_placemark_name.AppendChild(kml.CreateTextNode(name_));
               kml_placemark.AppendChild(kml_placemark_name);
+              if descr <> '' then
+              begin
+                kml_placemark_descr := kml.CreateElement('description');
+                //kml_placemark_descr.AppendChild(kml.CreateTextNode(descr));
+                kml_placemark_descr.AppendChild(kml.CreateCDATASection(descr));
+                kml_placemark.AppendChild(kml_placemark_descr);
+              end;
               kml_placemark_point := kml.CreateElement('Point');
               kml_placemark_coords := kml.CreateElement('coordinates');
               kml_placemark_coords.AppendChild(kml.CreateTextNode(Format('%s,%s,%s', [lon, lat, alt])));
