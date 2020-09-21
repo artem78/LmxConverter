@@ -32,3 +32,4 @@ lib/
 
 # My own rules
 /my/
+/Release/
