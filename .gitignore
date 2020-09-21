@@ -30,5 +30,5 @@ lib/
 *.app/
 
 
-*.cfg
-/myfiles/
+# My own rules
+/my/
