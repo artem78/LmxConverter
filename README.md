@@ -1,2 +1,88 @@
 # Lmx Converter
 Converts Nokia landmarks files (LMX) to another formats *(at the moment - [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) only)*
+
+## Conversion example
+input file `MyLandmarks.lmx`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<lm:lmx xmlns:lm="http://www.nokia.com/schemas/location/landmarks/1/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nokia.com/schemas/location/landmarks/1/0/ lmx.xsd">
+	<lm:landmarkCollection>
+		<lm:name>Ориентиры Тест</lm:name>
+		<lm:landmark>
+			<lm:name>Малина оч круп</lm:name>
+			<lm:description></lm:description>
+			<lm:coordinates>
+				<lm:latitude>55.958761251501</lm:latitude>
+				<lm:longitude>37.164745545607</lm:longitude>
+				<lm:altitude>203.5</lm:altitude>
+				<lm:horizontalAccuracy>16.7166042327881</lm:horizontalAccuracy>
+				<lm:verticalAccuracy>22</lm:verticalAccuracy>
+			</lm:coordinates>
+			<lm:addressInfo>
+				<lm:street></lm:street>
+				<lm:postalCode></lm:postalCode>
+				<lm:city></lm:city>
+				<lm:state></lm:state>
+				<lm:country></lm:country>
+				<lm:phoneNumber></lm:phoneNumber>
+			</lm:addressInfo>
+			<lm:category>
+				<lm:name>Ягоды</lm:name>
+			</lm:category>
+		</lm:landmark>
+		<lm:landmark>
+			<lm:name>Оч. Интересное место</lm:name>
+			<lm:description>Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§</lm:description>
+			<lm:coordinates>
+				<lm:latitude>56.1234</lm:latitude>
+				<lm:longitude>44.9876</lm:longitude>
+				<lm:altitude>123.669998168945</lm:altitude>
+				<lm:horizontalAccuracy>101.620002746582</lm:horizontalAccuracy>
+				<lm:verticalAccuracy>5.32000017166138</lm:verticalAccuracy>
+			</lm:coordinates>
+			<lm:addressInfo>
+				<lm:street>Ленина</lm:street>
+				<lm:postalCode>123456</lm:postalCode>
+				<lm:city>Ленинск</lm:city>
+				<lm:state>Ленинградская обл.</lm:state>
+				<lm:country>Русь</lm:country>
+				<lm:phoneNumber>+70001112233</lm:phoneNumber>
+			</lm:addressInfo>
+			<lm:category>
+				<lm:name>Добавить на OSM</lm:name>
+			</lm:category>
+			<lm:category>
+				<lm:name>Разное</lm:name>
+			</lm:category>
+			<lm:category>
+				<lm:name>OSM необработанные</lm:name>
+			</lm:category>
+		</lm:landmark>
+	</lm:landmarkCollection>
+</lm:lmx>
+```
+
+output file `MyLandmarks.kml`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://earth.google.com/kml/2.0">
+  <Document>
+    <Folder>
+      <Placemark>
+        <name>Малина оч круп</name>
+        <Point>
+          <coordinates>37.164745545607,55.958761251501,203.5</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Оч. Интересное место</name>
+        <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
+        <Point>
+          <coordinates>44.9876,56.1234,123.669998168945</coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>
+
+```
