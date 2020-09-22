@@ -13,6 +13,7 @@ uses
 {$R *.res}
 
 begin
+  Application.Title:='LMX Converter';
   RequireDerivedFormResource:=True;
   Application.Initialize;
   Application.CreateForm(TMainForm, MainForm);
