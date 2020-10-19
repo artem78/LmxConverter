@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls,  laz2_DOM,  laz2_XMLRead{, LCLProc}, laz2_XMLWrite  ;
+  StdCtrls, ExtCtrls{,}  {laz2_DOM,  laz2_XMLRead}{, LCLProc}{, laz2_XMLWrite}  ;
 
 type
 
@@ -33,6 +33,9 @@ var
 
 implementation
 
+uses
+  LandmarksConverter;
+
 {$R *.lfm}
 
 { TMainForm }
@@ -45,7 +48,7 @@ end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  lmx, kml: TXMLDocument;
+  {lmx, kml: TXMLDocument;
   landmarks_list : TDOMNodeList;
   landmark: TDOMNode;
   i: integer;
@@ -53,7 +56,10 @@ var
   name_, lat, lon, alt, descr: String;
   kml_file_name: String;
   kml_root, kml_doc, kml_folder, kml_placemark, kml_placemark_point,
-    kml_placemark_name, kml_placemark_descr, kml_placemark_coords, alt_node: TDOMNode;
+    kml_placemark_name, kml_placemark_descr, kml_placemark_coords, alt_node: TDOMNode;}
+
+  OutFileName: String;
+  Converter: TBaseLandmarksConverter;
 begin
   // Some checks before
   if LMXFilePath.Text = '' then
@@ -70,17 +76,27 @@ begin
     ofmtKML:
       begin
         //new_file_name := UTF8Copy( LMXFilePath.Text, 0, Length(LMXFilePath.Text)-3) + 'kml';
-        kml_file_name := ExtractFileNameWithoutExt(LMXFilePath.Text) + '.kml';
-        kml := TXMLDocument.Create;
+
+        ///////////////
+        OutFileName := ExtractFileNameWithoutExt(LMXFilePath.Text) + '.kml';
+        ////////////////
+
+        {kml := TXMLDocument.Create;
         kml_root := kml.CreateElement('kml');
         TDOMElement(kml_root).SetAttribute('xmlns', 'http://earth.google.com/kml/2.0');
         kml.AppendChild(kml_root);
         kml_doc := kml.CreateElement('Document');
         kml_root.AppendChild(kml_doc);
         kml_folder := kml.CreateElement('Folder');
-        kml_doc.AppendChild(kml_folder);
+        kml_doc.AppendChild(kml_folder);}
 
-        ReadXMLFile(lmx, LMXFilePath.Text);
+        Converter := TKMLLandmarksConverter.Create(LMXFilePath.Text, OutFileName);
+
+        try
+          try
+            Converter.Convert;
+
+        {ReadXMLFile(lmx, LMXFilePath.Text);
         try
           try
             landmarks_list := lmx.DocumentElement.GetElementsByTagName('lm:landmark');
@@ -116,7 +132,7 @@ begin
             end;
             landmarks_list.Free;
 
-            WriteXMLFile(kml, kml_file_name);
+            WriteXMLFile(kml, kml_file_name);   }
 
             ShowMessage('Done!');
           except
@@ -127,13 +143,17 @@ begin
           end;
 
         finally
-          lmx.Free;
-          kml.Free;
+          {lmx.Free;
+          kml.Free;}
+
+          Converter.Free;
         end;
       end;
     {else
       Exit;}
   end;
+
+  //Converter.Free;
 end;
 
 end.
