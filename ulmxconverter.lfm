@@ -336,7 +336,7 @@ object MainForm: TMainForm
     OnClick = ConvertButtonClick
     TabOrder = 1
   end
-  object LMXFilePath: TEdit
+  object LMXFilePathEdit: TEdit
     Left = 8
     Height = 23
     Top = 8
@@ -345,12 +345,12 @@ object MainForm: TMainForm
     ReadOnly = True
     TabOrder = 2
   end
-  object OutpuFormatRadioGroup: TRadioGroup
+  object OutputFormatRadioGroup: TRadioGroup
     Left = 8
     Height = 49
     Top = 48
     Width = 358
-    Anchors = [akTop, akLeft, akRight]
+    Anchors = [akTop, akLeft, akRight, akBottom]
     AutoFill = True
     Caption = 'Output format:'
     ChildSizing.LeftRightSpacing = 6

@@ -15,9 +15,9 @@ type
   TMainForm = class(TForm)
     ChooseLMXButton: TButton;
     ConvertButton: TButton;
-    LMXFilePath: TEdit;
+    LMXFilePathEdit: TEdit;
     OpenDialog: TOpenDialog;
-    OutpuFormatRadioGroup: TRadioGroup;
+    OutputFormatRadioGroup: TRadioGroup;
     procedure ChooseLMXButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
   private
@@ -43,29 +43,31 @@ uses
 procedure TMainForm.ChooseLMXButtonClick(Sender: TObject);
 begin
   if OpenDialog.Execute then;
-     LMXFilePath.Text:=OpenDialog.FileName;
+     LMXFilePathEdit.Text := OpenDialog.FileName;
 end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  OutFileName: String;
+  InFileName, OutFileName: String;
   Converter: TBaseLandmarksConverter;
 begin
+  InFileName := LMXFilePathEdit.Text;
+
   // Some checks before
-  if LMXFilePath.Text = '' then
+  if InFileName = '' then
      Exit; // Nothing to do
 
-  if not FileExists(LMXFilePath.Text) then
+  if not FileExists(InFileName) then
   begin
-    MessageDlg(Format('"%s" is not a valid input file!', [LMXFilePath.Text]), mtError, [mbOK], 0);
+    MessageDlg(Format('"%s" is not a valid input file!', [InFileName]), mtError, [mbOK], 0);
     Exit;
   end;
 
 
   // Create converter object depending of output format
-  case TOutputFormat(OutpuFormatRadioGroup.ItemIndex) of
+  case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
     ofmtKML:
-      Converter := TKMLLandmarksConverter.Create(LMXFilePath.Text);
+      Converter := TKMLLandmarksConverter.Create(InFileName);
 
     else
     begin
@@ -74,7 +76,7 @@ begin
     end;
   end;
 
-  OutFileName := ExtractFileNameWithoutExt(LMXFilePath.Text) + '.' +
+  OutFileName := ExtractFileNameWithoutExt(InFileName) + '.' +
                  Converter.FileExtension;
 
   try
