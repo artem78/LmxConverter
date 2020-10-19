@@ -72,88 +72,34 @@ begin
   end;
 
 
+  // Create converter object depending of output format
   case TOutputFormat(OutpuFormatRadioGroup.ItemIndex) of
     ofmtKML:
-      begin
-        //new_file_name := UTF8Copy( LMXFilePath.Text, 0, Length(LMXFilePath.Text)-3) + 'kml';
+      Converter := TKMLLandmarksConverter.Create(LMXFilePath.Text);
 
-        ///////////////
-        OutFileName := ExtractFileNameWithoutExt(LMXFilePath.Text) + '.kml';
-        ////////////////
-
-        {kml := TXMLDocument.Create;
-        kml_root := kml.CreateElement('kml');
-        TDOMElement(kml_root).SetAttribute('xmlns', 'http://earth.google.com/kml/2.0');
-        kml.AppendChild(kml_root);
-        kml_doc := kml.CreateElement('Document');
-        kml_root.AppendChild(kml_doc);
-        kml_folder := kml.CreateElement('Folder');
-        kml_doc.AppendChild(kml_folder);}
-
-        Converter := TKMLLandmarksConverter.Create(LMXFilePath.Text, OutFileName);
-
-        try
-          try
-            Converter.Convert;
-
-        {ReadXMLFile(lmx, LMXFilePath.Text);
-        try
-          try
-            landmarks_list := lmx.DocumentElement.GetElementsByTagName('lm:landmark');
-            for i := 0 to landmarks_list.Count-1 do
-            begin
-              landmark := landmarks_list[i];
-              name_ := landmark.FindNode('lm:name').TextContent;
-              descr := landmark.FindNode('lm:description').TextContent;
-              lat := landmark.FindNode('lm:coordinates').FindNode('lm:latitude').TextContent;
-              lon := landmark.FindNode('lm:coordinates').FindNode('lm:longitude').TextContent;
-              alt := '0';
-              alt_node := landmark.FindNode('lm:coordinates').FindNode('lm:altitude');
-              if alt_node <> nil then
-                alt := alt_node.TextContent;
-
-              kml_placemark := kml.CreateElement('Placemark');
-              kml_placemark_name := kml.CreateElement('name');
-              kml_placemark_name.AppendChild(kml.CreateTextNode(name_));
-              kml_placemark.AppendChild(kml_placemark_name);
-              if descr <> '' then
-              begin
-                kml_placemark_descr := kml.CreateElement('description');
-                //kml_placemark_descr.AppendChild(kml.CreateTextNode(descr));
-                kml_placemark_descr.AppendChild(kml.CreateCDATASection(descr));
-                kml_placemark.AppendChild(kml_placemark_descr);
-              end;
-              kml_placemark_point := kml.CreateElement('Point');
-              kml_placemark_coords := kml.CreateElement('coordinates');
-              kml_placemark_coords.AppendChild(kml.CreateTextNode(Format('%s,%s,%s', [lon, lat, alt])));
-              kml_placemark_point.AppendChild(kml_placemark_coords);
-              kml_placemark.AppendChild(kml_placemark_point);
-              kml_folder.AppendChild(kml_placemark);
-            end;
-            landmarks_list.Free;
-
-            WriteXMLFile(kml, kml_file_name);   }
-
-            ShowMessage('Done!');
-          except
-            //on e: Exception do ShowMessage('Error!' + #13 + #10 + #13 + #10 + String(e)) ;
-            on e: Exception do ShowMessage('Error!') ;
-          {else
-            ShowMessage('Done!');}
-          end;
-
-        finally
-          {lmx.Free;
-          kml.Free;}
-
-          Converter.Free;
-        end;
-      end;
-    {else
-      Exit;}
+    else
+    begin
+      MessageDlg('Unknown format!', mtError, [mbOK], 0);
+      Exit;
+    end;
   end;
 
-  //Converter.Free;
+  //new_file_name := UTF8Copy( LMXFilePath.Text, 0, Length(LMXFilePath.Text)-3) + 'kml';
+  OutFileName := ExtractFileNameWithoutExt(LMXFilePath.Text) + Converter.FileExtension;
+
+
+  try
+    try
+      Converter.Convert(OutFileName);
+
+      ShowMessage('Done!');
+    except
+      //on e: Exception do ShowMessage('Error!' + #13 + #10 + #13 + #10 + String(e)) ;
+      on e: Exception do ShowMessage('Error!') ;
+    end;
+  finally
+    Converter.Free;
+  end;
 end;
 
 end.

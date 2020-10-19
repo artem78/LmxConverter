@@ -11,6 +11,7 @@ type
   TLandmark = record
     Name, Description: String;
     Lat, Lon, Alt: Double;
+    // ToDo: Add more available fields
   end;
 
   { Abstract class for each landmarks converter }
@@ -30,13 +31,13 @@ type
 
   public
     // Constructor/destructor
-    constructor Create(AnInFileName, AnOutFileName: String); {virtual;}
+    constructor Create(AnInFileName: String); {virtual;}
     destructor Destroy; {virtual;} override;
 
     // Custom methods
     property FileExtension: String read GetFileExtension;
 
-    procedure Convert;
+    procedure Convert(AnOutFileName: String);
   end;
 
   { Base abstract class for XML converter }
@@ -50,7 +51,7 @@ type
     {procedure BeforeProcessing; virtual; abstract;
     procedure AfterProcessing; virtual; abstract;}
   public
-    constructor Create(AnInFileName, AnOutFileName: String); {virtual;}
+    constructor Create(AnInFileName: String); {virtual;}
     destructor Destroy; {virtual;} override;
   end;
 
@@ -68,7 +69,7 @@ type
     //procedure BeforeProcessing; override;
     //procedure AfterProcessing; override;
   public
-    constructor Create(AnInFileName, AnOutFileName: String); {virtual;}
+    constructor Create(AnInFileName: String); {virtual;}
     destructor Destroy; {virtual;} override;
   end;
 
@@ -76,10 +77,9 @@ implementation
 
 { TBaseLandmarksConverter }
 
-constructor TBaseLandmarksConverter.Create(AnInFileName, AnOutFileName: String);
+constructor TBaseLandmarksConverter.Create(AnInFileName: String);
 begin
   Self.InFileName := AnInFileName;
-  Self.OutFileName := AnOutFileName;
 
   ReadXMLFile(InXML, Self.InFileName);
 end;
@@ -89,7 +89,7 @@ begin
   InXML.Free;
 end;
 
-procedure TBaseLandmarksConverter.Convert;
+procedure TBaseLandmarksConverter.Convert(AnOutFileName: String);
 var
   FixedFormat: TFormatSettings;
   LandmarkNodes: TDOMNodeList;
@@ -97,6 +97,8 @@ var
   Landmark: TLandmark;
   AltNode: TDOMNode;
 begin
+  OutFileName := AnOutFileName;
+
   FixedFormat.DecimalSeparator := '.';
 
   LandmarkNodes := InXML.DocumentElement.GetElementsByTagName('lm:landmark');
@@ -111,7 +113,7 @@ begin
         Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
         Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
         AltNode := FindNode('lm:altitude');
-        if AltNode <> Nil then
+        if Assigned(AltNode) then
           Landmark.Alt := StrToFloat(AltNode.TextContent, FixedFormat)
         else
           Landmark.Alt := 0.0;
@@ -126,7 +128,7 @@ end;
 
 { TXMLLandmarksConverter }
 
-constructor TXMLLandmarksConverter.Create(AnInFileName, AnOutFileName: String);
+constructor TXMLLandmarksConverter.Create(AnInFileName: String);
 begin
   inherited;
 
@@ -167,6 +169,7 @@ begin
   if Landmark.Description <> '' then
   begin
     Element := OutXML.CreateElement('description');
+    //TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Description));
     TDOMDocument(Element).AppendChild(OutXML.CreateCDATASection(Landmark.Description));
     PlacemarkElement.AppendChild(Element);
   end;
@@ -199,7 +202,7 @@ begin
 
 end;}
 
-constructor TKMLLandmarksConverter.Create(AnInFileName, AnOutFileName: String);
+constructor TKMLLandmarksConverter.Create(AnInFileName: String);
 var
   {Element} KMLNode, DocumentNode, FolderNode: TDOMNode;
 begin
