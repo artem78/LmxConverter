@@ -107,7 +107,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="2">
+    <Units Count="3">
       <Unit0>
         <Filename Value="lmxconverter.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -119,6 +119,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit1>
+      <Unit2>
+        <Filename Value="landmarksconverter.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="LandmarksConverter"/>
+      </Unit2>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
