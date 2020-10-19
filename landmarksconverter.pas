@@ -15,62 +15,39 @@ type
   end;
 
   { Abstract class for each landmarks converter }
-
-  { TBaseLandmarksConverter }
-
   TBaseLandmarksConverter = class
   private
     InFileName, OutFileName: String;
     InXML: TXMLDocument;
 
-    // Getters/setters
     function GetFileExtension: String; virtual; abstract;
-
-    // Custom methods
     procedure ProcessLandmark(Landmark: TLandmark); virtual; abstract;
-
   public
-    // Constructor/destructor
-    constructor Create(AnInFileName: String); {virtual;}
-    destructor Destroy; {virtual;} override;
-
-    // Custom methods
+    constructor Create(AnInFileName: String);
+    destructor Destroy; override;
     property FileExtension: String read GetFileExtension;
-
     procedure Convert(AnOutFileName: String);
   end;
 
   { Base abstract class for XML converter }
-
-  { TXMLLandmarksConverter }
-
   TXMLLandmarksConverter = class(TBaseLandmarksConverter)
   private
     OutXML: TXMLDocument;
-
-    {procedure BeforeProcessing; virtual; abstract;
-    procedure AfterProcessing; virtual; abstract;}
   public
-    constructor Create(AnInFileName: String); {virtual;}
-    destructor Destroy; {virtual;} override;
+    constructor Create(AnInFileName: String);
+    destructor Destroy; override;
   end;
 
   { KML converter }
-
-  { TKMLLandmarksConverter }
-
   TKMLLandmarksConverter = class(TXMLLandmarksConverter)
   private
     //RootElement: TDOMNode;
 
     function GetFileExtension: String; override;
-
     procedure ProcessLandmark(Landmark: TLandmark); override;
-    //procedure BeforeProcessing; override;
-    //procedure AfterProcessing; override;
   public
-    constructor Create(AnInFileName: String); {virtual;}
-    destructor Destroy; {virtual;} override;
+    constructor Create(AnInFileName: String);
+    destructor Destroy; override;
   end;
 
 implementation
@@ -184,7 +161,6 @@ begin
   ));
 
 
-
   //RootElement.AppendChild(PlacemarkElement);
 
   PlacemarksRootElement := OutXML.GetElementsByTagName('Folder').Item[0];
@@ -192,27 +168,11 @@ begin
 
 end;
 
-{procedure TKMLLandmarksConverter.BeforeProcessing;
-begin
-
-end;  }
-
-{procedure TKMLLandmarksConverter.AfterProcessing;
-begin
-
-end;}
-
 constructor TKMLLandmarksConverter.Create(AnInFileName: String);
 var
-  {Element} KMLNode, DocumentNode, FolderNode: TDOMNode;
+  KMLNode, DocumentNode, FolderNode: TDOMNode;
 begin
   inherited;
-
-  {Element := OutXML.CreateElement('kml');
-  TDOMElement(Element).SetAttribute('xmlns', 'http://earth.google.com/kml/2.0');
-  OutXML.AppendChild(Element);
-  Element := Element.AppendChild(OutXML.CreateElement('Document'));
-  RootElement := Element.AppendChild(OutXML.CreateElement('Folder')); }
 
   KMLNode := OutXML.CreateElement('kml');
   TDOMElement(KMLNode).SetAttribute('xmlns', 'http://earth.google.com/kml/2.0');
