@@ -90,22 +90,15 @@ begin
 end;
 
 procedure TBaseLandmarksConverter.Convert;
-  function Str2Float(const S: String): Double;
-  var
-    OldSeparator: char;
-  begin
-    OldSeparator := DecimalSeparator; // Backup decimal separator
-    DecimalSeparator := '.';
-    Result := StrToFloat(S);
-    DecimalSeparator := OldSeparator; // Restore decimal separator
-  end;
-
 var
+  FixedFormat: TFormatSettings;
   LandmarkNodes: TDOMNodeList;
   Idx: Integer;
   Landmark: TLandmark;
   AltNode: TDOMNode;
 begin
+  FixedFormat.DecimalSeparator := '.';
+
   LandmarkNodes := InXML.DocumentElement.GetElementsByTagName('lm:landmark');
   for Idx := 0 to LandmarkNodes.Count-1 do
   begin
@@ -115,11 +108,11 @@ begin
       Landmark.Description := FindNode('lm:description').TextContent;
       with FindNode('lm:coordinates') do
       begin
-        Landmark.Lat := Str2Float(FindNode('lm:latitude').TextContent);
-        Landmark.Lon := Str2Float(FindNode('lm:longitude').TextContent);
+        Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
+        Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
         AltNode := FindNode('lm:altitude');
         if AltNode <> Nil then
-          Landmark.Alt := Str2Float(AltNode.TextContent)
+          Landmark.Alt := StrToFloat(AltNode.TextContent, FixedFormat)
         else
           Landmark.Alt := 0.0;
       end;
@@ -158,9 +151,11 @@ end;
 
 procedure TKMLLandmarksConverter.ProcessLandmark(Landmark: TLandmark);
 var
+  FixedFormat: TFormatSettings;
   PlacemarkElement, Element, PlacemarksRootElement: TDOMNode;
-  OldSeparator: char;
 begin
+  FixedFormat.DecimalSeparator := '.';
+
   PlacemarkElement := OutXML.CreateElement('Placemark');
 
   { Name }
@@ -179,11 +174,12 @@ begin
   { Coordinates }
   Element := PlacemarkElement.AppendChild(OutXML.CreateElement('Point'));
   Element := Element.AppendChild(OutXML.CreateElement('coordinates'));
-  OldSeparator := DecimalSeparator; // Backup decimal separator
-  DecimalSeparator := '.';
-  Element := Element.AppendChild(OutXML.CreateTextNode(Format('%f,%f,%f',
-          [Landmark.Lon, Landmark.Lat, Landmark.Alt])));
-  DecimalSeparator := OldSeparator; // Restore decimal separator
+  Element := Element.AppendChild(OutXML.CreateTextNode(
+          FloatToStr(Landmark.Lon, FixedFormat) + ',' +
+          FloatToStr(Landmark.Lat, FixedFormat) + ',' +
+          FloatToStr(Landmark.Alt, FixedFormat)
+  ));
+
 
 
   //RootElement.AppendChild(PlacemarkElement);
