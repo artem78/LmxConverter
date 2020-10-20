@@ -1,12 +1,12 @@
 object MainForm: TMainForm
   Left = 0
-  Height = 112
+  Height = 139
   Top = 0
   Width = 520
   ActiveControl = ChooseLMXButton
   BorderStyle = bsDialog
   Caption = 'LMX Converter'
-  ClientHeight = 112
+  ClientHeight = 139
   ClientWidth = 520
   Icon.Data = {
     BE2500000000010001003030000001002000A825000016000000280000003000
@@ -329,7 +329,7 @@ object MainForm: TMainForm
   object ConvertButton: TButton
     Left = 374
     Height = 25
-    Top = 72
+    Top = 99
     Width = 139
     Anchors = [akRight, akBottom]
     Caption = 'Convert'
@@ -347,7 +347,7 @@ object MainForm: TMainForm
   end
   object OutputFormatRadioGroup: TRadioGroup
     Left = 8
-    Height = 49
+    Height = 76
     Top = 48
     Width = 358
     Anchors = [akTop, akLeft, akRight, akBottom]
@@ -360,11 +360,12 @@ object MainForm: TMainForm
     ChildSizing.ShrinkVertical = crsScaleChilds
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 29
+    ClientHeight = 56
     ClientWidth = 354
     ItemIndex = 0
     Items.Strings = (
       'KML (Keyhole Markup Language)'
+      'GPX (GPS eXchange Format)'
     )
     TabOrder = 3
   end

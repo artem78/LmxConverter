@@ -1,5 +1,5 @@
 # Lmx Converter
-Converts Nokia landmarks files (LMX) to another formats *(at the moment - [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) only)*
+Converts Nokia landmarks files (LMX) to another formats: [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) and [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format).
 
 ## Conversion example
 input file `MyLandmarks.lmx`:
@@ -85,4 +85,20 @@ output file `MyLandmarks.kml`:
   </Document>
 </kml>
 
+```
+
+output file `MyLandmarks.gpx`:
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+  <wpt lat="55.958761251501" lon="37.164745545607">
+    <ele>203.5</ele>
+    <name>Малина оч круп</name>
+  </wpt>
+  <wpt lat="56.1234" lon="44.9876">
+    <ele>123.669998168945</ele>
+    <name>Оч. Интересное место</name>
+    <desc>Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§</desc>
+  </wpt>
+</gpx>
 ```

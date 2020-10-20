@@ -50,7 +50,86 @@ type
     destructor Destroy; override;
   end;
 
+  { GPX converter }
+  TGPXLandmarksConverter = class(TXMLLandmarksConverter)
+  private
+    RootElement: TDOMNode;
+
+    function GetFileExtension: String; override;
+    procedure ProcessLandmark(Landmark: TLandmark); override;
+  public
+    constructor Create(AnInFileName: String);
+    destructor Destroy; override;
+  end;
+
 implementation
+
+{ TGPXLandmarksConverter }
+
+function TGPXLandmarksConverter.GetFileExtension: String;
+begin
+  Result := 'gpx';
+end;
+
+procedure TGPXLandmarksConverter.ProcessLandmark(Landmark: TLandmark);
+var
+  FixedFormat: TFormatSettings;
+  WPTNode, EleNode, NameNode, DescNode: TDOMNode;
+begin
+  FixedFormat.DecimalSeparator := '.';
+
+  WPTNode := OutXML.CreateElement('wpt');
+  TDOMElement(WPTNode).SetAttribute('lat', FloatToStr(Landmark.Lat, FixedFormat));
+  TDOMElement(WPTNode).SetAttribute('lon', FloatToStr(Landmark.Lon, FixedFormat));
+  RootElement.AppendChild(WPTNode);
+
+  if not IsNan(Landmark.Alt) then
+  begin
+    EleNode := OutXML.CreateElement('ele');
+    EleNode.TextContent := FloatToStr(Landmark.Alt, FixedFormat);
+    WPTNode.AppendChild(EleNode);
+  end;
+
+  if Landmark.Name <> '' then
+  begin
+    NameNode := OutXML.CreateElement('name');
+    NameNode.TextContent := Landmark.Name;
+    WPTNode.AppendChild(NameNode);
+  end;
+
+  if Landmark.Description <> '' then
+  begin
+    DescNode := OutXML.CreateElement('desc');
+    DescNode.TextContent := Landmark.Description;
+    WPTNode.AppendChild(DescNode);
+  end;
+
+end;
+
+constructor TGPXLandmarksConverter.Create(AnInFileName: String);
+var
+  GPXNode: TDOMNode;
+begin
+  inherited;
+
+  GPXNode := OutXML.CreateElement('gpx');
+  with (TDOMElement(GPXNode)) do
+  begin
+    SetAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
+    SetAttribute('version', '1.1');
+    SetAttribute('creator', ''); // ToDo: add this
+    SetAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+    SetAttribute('xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 ' +
+                 'http://www.topografix.com/GPX/1/1/gpx.xsd')
+  end;
+  OutXML.AppendChild(GPXNode);
+  RootElement := GPXNode;
+end;
+
+destructor TGPXLandmarksConverter.Destroy;
+begin
+  inherited Destroy;
+end;
 
 { TBaseLandmarksConverter }
 

@@ -26,7 +26,7 @@ type
     { public declarations }
   end;
 
-  TOutputFormat = (ofmtKML=0);
+  TOutputFormat = (ofmtKML=0, ofmtGPX);
 
 var
   MainForm: TMainForm;
@@ -68,6 +68,9 @@ begin
   case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
     ofmtKML:
       Converter := TKMLLandmarksConverter.Create(InFileName);
+
+    ofmtGPX:
+      Converter := TGPXLandmarksConverter.Create(InFileName);
 
     else
     begin
