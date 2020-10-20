@@ -5,12 +5,12 @@ unit LandmarksConverter;
 interface
 
 uses
-  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite;
+  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math;
 
 type
   TLandmark = record
     Name, Description: String;
-    Lat, Lon, Alt: Double;
+    Lat, Lon, Alt: Double;  // Note: Alt may be NaN
     // ToDo: Add more available fields
   end;
 
@@ -93,7 +93,7 @@ begin
         if Assigned(AltNode) then
           Landmark.Alt := StrToFloat(AltNode.TextContent, FixedFormat)
         else
-          Landmark.Alt := 0.0;
+          Landmark.Alt := NaN;
       end;
 
       ProcessLandmark(Landmark);
@@ -132,6 +132,7 @@ procedure TKMLLandmarksConverter.ProcessLandmark(Landmark: TLandmark);
 var
   FixedFormat: TFormatSettings;
   PlacemarkElement, Element, PlacemarksRootElement: TDOMNode;
+  CoordsStr: String;
 begin
   FixedFormat.DecimalSeparator := '.';
 
@@ -154,11 +155,11 @@ begin
   { Coordinates }
   Element := PlacemarkElement.AppendChild(OutXML.CreateElement('Point'));
   Element := Element.AppendChild(OutXML.CreateElement('coordinates'));
-  Element := Element.AppendChild(OutXML.CreateTextNode(
-          FloatToStr(Landmark.Lon, FixedFormat) + ',' +
-          FloatToStr(Landmark.Lat, FixedFormat) + ',' +
-          FloatToStr(Landmark.Alt, FixedFormat)
-  ));
+  CoordsStr := FloatToStr(Landmark.Lon, FixedFormat) + ',' +
+               FloatToStr(Landmark.Lat, FixedFormat);
+  if not IsNan(Landmark.Alt) then      // Altitude is optional
+    CoordsStr := CoordsStr + ',' + FloatToStr(Landmark.Alt, FixedFormat);
+  Element := Element.AppendChild(OutXML.CreateTextNode(CoordsStr));
 
 
   //RootElement.AppendChild(PlacemarkElement);
