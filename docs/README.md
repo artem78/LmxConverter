@@ -1,4 +1,7 @@
 # Lmx Converter
+
+![](img/screenshot.png)
+
 Converts Nokia landmarks files (LMX) to another formats: [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) and [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format).
 
 ## Conversion example
