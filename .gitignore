@@ -33,3 +33,4 @@ lib/
 # My own rules
 /my/
 /Release/
+/config.ini

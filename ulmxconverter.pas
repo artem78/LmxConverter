@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls{, LCLProc};
+  StdCtrls, ExtCtrls, IniPropStorage{, LCLProc};
 
 type
 
@@ -15,11 +15,14 @@ type
   TMainForm = class(TForm)
     ChooseLMXButton: TButton;
     ConvertButton: TButton;
+    IniPropStorage: TIniPropStorage;
     LMXFilePathEdit: TEdit;
     OpenDialog: TOpenDialog;
     OutputFormatRadioGroup: TRadioGroup;
     procedure ChooseLMXButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure OutputFormatRadioGroupClick(Sender: TObject);
   private
     { private declarations }
   public
@@ -94,6 +97,31 @@ begin
   finally
     Converter.Free;
   end;
+end;
+
+procedure TMainForm.FormCreate(Sender: TObject);
+var
+  OutFormat: String;
+begin
+  // Read settings from INI file
+  OutFormat := IniPropStorage.ReadString('format', 'kml');
+  if OutFormat = 'gpx' then
+     OutputFormatRadioGroup.ItemIndex := Ord(ofmtGPX)
+  else // KML is default
+     OutputFormatRadioGroup.ItemIndex := Ord(ofmtKML);
+end;
+
+procedure TMainForm.OutputFormatRadioGroupClick(Sender: TObject);
+var
+  OutFormat: String;
+begin
+  // Save settings for output format
+  case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
+    ofmtKML: OutFormat := 'kml';
+    ofmtGPX: OutFormat := 'gpx';
+    else     raise Exception.Create('Unknown format');
+  end;
+  IniPropStorage.WriteString('format', OutFormat);
 end;
 
 end.
