@@ -9,7 +9,7 @@ Converts Nokia landmarks files (LMX) to another formats: [KML](https://en.wikipe
 1. Select landmarks
 1. In menu press `Send`, write any file name and choose suitable transferring method
 
-![Landmarks export](img/landmarks-export.png)
+![Landmarks export](img/landmarks-export.gif)
 
 ## Conversion example
 input file `MyLandmarks.lmx`:
