@@ -255,6 +255,14 @@ begin
   TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Name));
   PlacemarkElement.AppendChild(Element);
 
+  { Phone number }
+  if Landmark.Address.PhoneNumber <> '' then
+  begin
+    Element := OutXML.CreateElement('phoneNumber');
+    TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Address.PhoneNumber));
+    PlacemarkElement.AppendChild(Element);
+  end;
+
   { Description }
   if Landmark.Description <> '' then
   begin
