@@ -98,7 +98,7 @@ begin
     try
       Converter.Convert(OutFileName);
 
-      ShowMessage('Done!');
+      MessageDlg('Done!', mtInformation, [mbOK], 0);
     except
       //on e: Exception do ShowMessage('Error!' + #13 + #10 + #13 + #10 + String(e)) ;
       on e: Exception do ShowMessage('Error!') ;
