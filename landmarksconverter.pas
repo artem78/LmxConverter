@@ -8,10 +8,15 @@ uses
   Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math;
 
 type
+  TLandmarkAddress = record
+    Street, PostalCode, City, State, Country, PhoneNumber: String;
+  end;
+
   TLandmark = record
     Name, Description: String;
-    Lat, Lon, Alt: Double;  // Note: Alt may be NaN
-    // ToDo: Add more available fields
+    Lat, Lon, Alt, HorAccuracy, VertAccuracy: Double;  // Note: Alt may be NaN
+    Address: TLandmarkAddress;
+    Categories: TStringList;
   end;
 
   { Abstract class for each landmarks converter }
@@ -148,8 +153,8 @@ end;
 procedure TBaseLandmarksConverter.Convert(AnOutFileName: String);
 var
   FixedFormat: TFormatSettings;
-  LandmarkNodes: TDOMNodeList;
-  Idx: Integer;
+  LandmarkNodes{, CategoryNodes}: TDOMNodeList;
+  Idx, Idx2: Integer;
   Landmark: TLandmark;
   AltNode: TDOMNode;
 begin
@@ -164,6 +169,8 @@ begin
     begin
       Landmark.Name        := FindNode('lm:name').TextContent;
       Landmark.Description := FindNode('lm:description').TextContent;
+
+      // Coordinates
       with FindNode('lm:coordinates') do
       begin
         Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
@@ -173,6 +180,31 @@ begin
           Landmark.Alt := StrToFloat(AltNode.TextContent, FixedFormat)
         else
           Landmark.Alt := NaN;
+        Landmark.HorAccuracy  := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent, FixedFormat);
+        Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent, FixedFormat);
+      end;
+
+      // Address
+      with FindNode('lm:addressInfo') do
+      begin
+        Landmark.Address.Street      := FindNode('lm:street').TextContent;
+        Landmark.Address.PostalCode  := FindNode('lm:postalCode').TextContent;
+        Landmark.Address.City        := FindNode('lm:city').TextContent;
+        Landmark.Address.State       := FindNode('lm:state').TextContent;
+        Landmark.Address.Country     := FindNode('lm:country').TextContent;
+        Landmark.Address.PhoneNumber := FindNode('lm:phoneNumber').TextContent;
+      end;
+
+      // Categories
+      Landmark.Categories := TStringList.Create;
+      {CategoryNodes := TDOMDocument(LandmarkNodes[Idx]).GetElementsByTagName('lm:category'); // SIGPE error
+      for Idx2 := 0 to CategoryNodes.Count - 1 do
+        Landmark.Categories.Append(CategoryNodes[Idx2].FindNode('lm:name').TextContent);}
+      for Idx2 := 0 to ChildNodes.Count - 1 do
+      begin
+        if (ChildNodes[Idx2].NodeType = ELEMENT_NODE)
+            and (ChildNodes[Idx2].NodeName = 'lm:category') then
+          Landmark.Categories.Append(ChildNodes[Idx2].FindNode('lm:name').TextContent);
       end;
 
       ProcessLandmark(Landmark);
