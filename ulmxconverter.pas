@@ -84,6 +84,15 @@ begin
 
   OutFileName := ExtractFileNameWithoutExt(InFileName) + '.' +
                  Converter.FileExtension;
+  if FileExists(OutFileName) then
+  begin
+    if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
+         mtConfirmation, mbYesNo, 0) <> mrYes then
+    begin
+      Converter.Free;
+      Exit;
+    end;
+  end;
 
   try
     try

@@ -193,7 +193,8 @@ end;
 
 destructor TXMLLandmarksConverter.Destroy;
 begin
-  WriteXMLFile(OutXML, OutFileName);
+  if OutFileName <> '' then
+    WriteXMLFile(OutXML, OutFileName);
 
   OutXML.Free;
 
