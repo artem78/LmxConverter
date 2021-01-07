@@ -165,49 +165,54 @@ begin
   LandmarkNodes := InXML.DocumentElement.GetElementsByTagName('lm:landmark');
   for Idx := 0 to LandmarkNodes.Count-1 do
   begin
-    with LandmarkNodes[Idx] do
-    begin
-      Landmark.Name        := FindNode('lm:name').TextContent;
-      Landmark.Description := FindNode('lm:description').TextContent;
-
-      // Coordinates
-      with FindNode('lm:coordinates') do
+    Landmark.Categories := TStringList.Create;
+    try
+      with LandmarkNodes[Idx] do
       begin
-        Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
-        Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
-        AltNode := FindNode('lm:altitude');
-        if Assigned(AltNode) then
-          Landmark.Alt := StrToFloat(AltNode.TextContent, FixedFormat)
-        else
-          Landmark.Alt := NaN;
-        Landmark.HorAccuracy  := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent, FixedFormat);
-        Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent, FixedFormat);
-      end;
+        Landmark.Name        := FindNode('lm:name').TextContent;
+        Landmark.Description := FindNode('lm:description').TextContent;
 
-      // Address
-      with FindNode('lm:addressInfo') do
-      begin
-        Landmark.Address.Street      := FindNode('lm:street').TextContent;
-        Landmark.Address.PostalCode  := FindNode('lm:postalCode').TextContent;
-        Landmark.Address.City        := FindNode('lm:city').TextContent;
-        Landmark.Address.State       := FindNode('lm:state').TextContent;
-        Landmark.Address.Country     := FindNode('lm:country').TextContent;
-        Landmark.Address.PhoneNumber := FindNode('lm:phoneNumber').TextContent;
-      end;
+        // Coordinates
+        with FindNode('lm:coordinates') do
+        begin
+          Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
+          Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
+          AltNode := FindNode('lm:altitude');
+          if Assigned(AltNode) then
+            Landmark.Alt := StrToFloat(AltNode.TextContent, FixedFormat)
+          else
+            Landmark.Alt := NaN;
+          Landmark.HorAccuracy  := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent, FixedFormat);
+          Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent, FixedFormat);
+        end;
 
-      // Categories
-      Landmark.Categories := TStringList.Create;
-      {CategoryNodes := TDOMDocument(LandmarkNodes[Idx]).GetElementsByTagName('lm:category'); // SIGPE error
-      for Idx2 := 0 to CategoryNodes.Count - 1 do
-        Landmark.Categories.Append(CategoryNodes[Idx2].FindNode('lm:name').TextContent);}
-      for Idx2 := 0 to ChildNodes.Count - 1 do
-      begin
-        if (ChildNodes[Idx2].NodeType = ELEMENT_NODE)
-            and (ChildNodes[Idx2].NodeName = 'lm:category') then
-          Landmark.Categories.Append(ChildNodes[Idx2].FindNode('lm:name').TextContent);
-      end;
+        // Address
+        with FindNode('lm:addressInfo') do
+        begin
+          Landmark.Address.Street      := FindNode('lm:street').TextContent;
+          Landmark.Address.PostalCode  := FindNode('lm:postalCode').TextContent;
+          Landmark.Address.City        := FindNode('lm:city').TextContent;
+          Landmark.Address.State       := FindNode('lm:state').TextContent;
+          Landmark.Address.Country     := FindNode('lm:country').TextContent;
+          Landmark.Address.PhoneNumber := FindNode('lm:phoneNumber').TextContent;
+        end;
 
-      ProcessLandmark(Landmark);
+        // Categories
+
+        {CategoryNodes := TDOMDocument(LandmarkNodes[Idx]).GetElementsByTagName('lm:category'); // SIGPE error
+        for Idx2 := 0 to CategoryNodes.Count - 1 do
+          Landmark.Categories.Append(CategoryNodes[Idx2].FindNode('lm:name').TextContent);}
+        for Idx2 := 0 to ChildNodes.Count - 1 do
+        begin
+          if (ChildNodes[Idx2].NodeType = ELEMENT_NODE)
+              and (ChildNodes[Idx2].NodeName = 'lm:category') then
+            Landmark.Categories.Append(ChildNodes[Idx2].FindNode('lm:name').TextContent);
+        end;
+
+        ProcessLandmark(Landmark);
+      end;
+    finally
+      Landmark.Categories.Free;
     end;
   end;
 
