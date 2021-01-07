@@ -82,8 +82,7 @@ begin
     end;
   end;
 
-  OutFileName := ExtractFileNameWithoutExt(InFileName) + '.' +
-                 Converter.FileExtension;
+  OutFileName := ChangeFileExt(InFileName, '.' + Converter.FileExtension);
   if FileExists(OutFileName) then
   begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
