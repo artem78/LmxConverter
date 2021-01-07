@@ -244,28 +244,25 @@ begin
 
   //RootElement.AppendChild(PlacemarkElement);
 
-  PlacemarksRootElement := OutXML.GetElementsByTagName('Folder').Item[0];
+  PlacemarksRootElement := OutXML.GetElementsByTagName('Document').Item[0];
   PlacemarksRootElement.AppendChild(PlacemarkElement);
 
 end;
 
 constructor TKMLLandmarksConverter.Create(AnInFileName: String);
 var
-  KMLNode, DocumentNode, FolderNode: TDOMNode;
+  KMLNode, DocumentNode: TDOMNode;
 begin
   inherited;
 
   KMLNode := OutXML.CreateElement('kml');
-  TDOMElement(KMLNode).SetAttribute('xmlns', 'http://earth.google.com/kml/2.0');
+  TDOMElement(KMLNode).SetAttribute('xmlns', 'http://www.opengis.net/kml/2.2');
   OutXML.AppendChild(KMLNode);
 
   DocumentNode := OutXML.CreateElement('Document');
   KMLNode.AppendChild(DocumentNode);
 
-  FolderNode := OutXML.CreateElement('Folder');
-  DocumentNode.AppendChild(FolderNode);
-
-//  RootElement := FolderNode;
+//  RootElement := DocumentNode;
 end;
 
 destructor TKMLLandmarksConverter.Destroy;
