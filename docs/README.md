@@ -12,7 +12,21 @@ Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) 
 
 ![Landmarks export](img/landmarks-export.gif)
 
-## Conversion example
+## Exported fields
+
+|                                  | LMX | GPX | KML |
+|----------------------------------|-----|-----|-----|
+| Name                             |  +  |  +  |  +  |
+| Description                      |  +  |  +  |  +  |
+| Coordinates (lat + lon)          |  +  |  +  |  +  |
+| Altitude                         |  +  |  +  |  +  |
+| Accuracy (horizontal + vertical) |  +  |     |     |
+| Address                          |  +  |     |  +  |
+| Phone number                     |  +  |     |  +  |
+| Link                             |     |     |     |
+| Category                         |  +  |     |  +  |
+
+## Convert example
 input file `MyLandmarks.lmx`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -76,17 +90,47 @@ input file `MyLandmarks.lmx`:
 output file `MyLandmarks.kml`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
-<kml xmlns="http://earth.google.com/kml/2.0">
+<kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <Folder>
+      <name>Ягоды</name>
       <Placemark>
         <name>Малина оч круп</name>
         <Point>
           <coordinates>37.164745545607,55.958761251501,203.5</coordinates>
         </Point>
       </Placemark>
+    </Folder>
+    <Folder>
+      <name>Добавить на OSM</name>
       <Placemark>
         <name>Оч. Интересное место</name>
+        <address>Ленина, Ленинск, Ленинградская обл., Русь, 123456</address>
+        <phoneNumber>+70001112233</phoneNumber>
+        <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
+        <Point>
+          <coordinates>44.9876,56.1234,123.669998168945</coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>Разное</name>
+      <Placemark>
+        <name>Оч. Интересное место</name>
+        <address>Ленина, Ленинск, Ленинградская обл., Русь, 123456</address>
+        <phoneNumber>+70001112233</phoneNumber>
+        <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
+        <Point>
+          <coordinates>44.9876,56.1234,123.669998168945</coordinates>
+        </Point>
+      </Placemark>
+    </Folder>
+    <Folder>
+      <name>OSM необработанные</name>
+      <Placemark>
+        <name>Оч. Интересное место</name>
+        <address>Ленина, Ленинск, Ленинградская обл., Русь, 123456</address>
+        <phoneNumber>+70001112233</phoneNumber>
         <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
         <Point>
           <coordinates>44.9876,56.1234,123.669998168945</coordinates>
@@ -95,7 +139,6 @@ output file `MyLandmarks.kml`:
     </Folder>
   </Document>
 </kml>
-
 ```
 
 output file `MyLandmarks.gpx`:
