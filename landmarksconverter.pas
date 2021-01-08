@@ -360,6 +360,8 @@ begin
   Element := Element.AppendChild(OutXML.CreateTextNode(CoordsStr));
 
   { Category(ies) }
+  // NOTE: LMX allow landmark to be included in more then one category.
+  //    Therefore in KLM landmark may be duplicated in several folders.
   DocumentNode := OutXML.GetElementsByTagName('Document').Item[0];
   if Landmark.Categories.Count <> 0 then
   begin
