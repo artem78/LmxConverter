@@ -1,5 +1,12 @@
 unit LandmarksConverter;
 
+{
+Formats documentation/schemas:
+  LMX 1.0 - https://web.archive.org/web/20080611213659if_/http://www.forum.nokia.com/main/resources/technologies/location_based_services/lmx.xsd
+  KML 2.2 - https://developers.google.com/kml/documentation/kmlreference
+  GPX 1.1 - https://www.topografix.com/gpx/1/1/
+}
+
 {$mode objfpc}{$H+}
 
 interface
