@@ -53,6 +53,7 @@ procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
   InFileName, OutFileName: String;
   Converter: TBaseLandmarksConverter;
+  FailMessage: String;
 begin
   InFileName := LMXFilePathEdit.Text;
 
@@ -99,8 +100,11 @@ begin
 
       MessageDlg('Done!', mtInformation, [mbOK], 0);
     except
-      //on e: Exception do ShowMessage('Error!' + #13 + #10 + #13 + #10 + String(e)) ;
-      on e: Exception do ShowMessage('Error!') ;
+      on E: Exception do
+      begin
+        FailMessage := 'Failed!';
+        MessageDlg(FailMessage, mtError, [mbOK], 0);
+      end;
     end;
   finally
     Converter.Free;
