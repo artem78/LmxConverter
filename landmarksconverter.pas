@@ -57,6 +57,8 @@ type
 
     function GetFileExtension: String; override;
     procedure ProcessLandmark(Landmark: TLandmark); override;
+
+    function FindFolderNode(AFolderName: String): TDOMNode;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
@@ -316,8 +318,11 @@ end;
 procedure TKMLLandmarksConverter.ProcessLandmark(Landmark: TLandmark);
 var
   FixedFormat: TFormatSettings;
-  PlacemarkElement, Element, PlacemarksRootElement: TDOMNode;
+  PlacemarkElement, Element{, PlacemarksRootElement}: TDOMNode;
+  DocumentNode, FolderNode, FolderNameNode: TDOMNode;
   CoordsStr: String;
+  CatIdx: Integer;
+  Category: String;
 begin
   FixedFormat.DecimalSeparator := '.';
 
@@ -354,12 +359,54 @@ begin
     CoordsStr := CoordsStr + ',' + FloatToStr(Landmark.Alt, FixedFormat);
   Element := Element.AppendChild(OutXML.CreateTextNode(CoordsStr));
 
+  { Category(ies) }
+  DocumentNode := OutXML.GetElementsByTagName('Document').Item[0];
+  if Landmark.Categories.Count <> 0 then
+  begin
+    for CatIdx := 0 to Landmark.Categories.Count - 1 do
+    begin
+      Category := Landmark.Categories.Strings[CatIdx];
+      FolderNode := FindFolderNode(Category);
+      if not Assigned(FolderNode) then
+      begin
+        // Create non-exist folder
+        FolderNode := OutXML.CreateElement('Folder');
+        FolderNameNode := OutXML.CreateElement('name');
+        FolderNameNode.AppendChild(OutXML.CreateTextNode(Category));
+        FolderNode.AppendChild(FolderNameNode);
+        DocumentNode.AppendChild(FolderNode);
+      end;
 
-  //RootElement.AppendChild(PlacemarkElement);
+      FolderNode.AppendChild(PlacemarkElement.CloneNode(True));
+    end;
+  end
+  else
+  begin
+    //RootElement.AppendChild(PlacemarkElement);
 
-  PlacemarksRootElement := OutXML.GetElementsByTagName('Document').Item[0];
-  PlacemarksRootElement.AppendChild(PlacemarkElement);
+    {PlacemarksRootElement := ;
+    PlacemarksRootElement.AppendChild(PlacemarkElement);}
 
+    DocumentNode.AppendChild(PlacemarkElement);
+  end;
+end;
+
+function TKMLLandmarksConverter.FindFolderNode(AFolderName: String): TDOMNode;
+var
+  FolderNodes: TDOMNodeList;
+  Idx: integer;
+begin
+  FolderNodes := OutXML.GetElementsByTagName('Folder');
+  for Idx := 0 to FolderNodes.Count - 1 do
+  begin
+    if FolderNodes[Idx].FindNode('name').TextContent = AFolderName then
+    begin
+      Result := FolderNodes[Idx];
+      Exit;
+    end;
+  end;
+
+  Result := nil; // Nothing found
 end;
 
 constructor TKMLLandmarksConverter.Create(AnInFileName: String);
