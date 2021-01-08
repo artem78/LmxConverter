@@ -330,7 +330,7 @@ object MainForm: TMainForm
   object ConvertButton: TButton
     Left = 374
     Height = 25
-    Top = 99
+    Top = 56
     Width = 139
     Anchors = [akRight, akBottom]
     Caption = 'Convert'
@@ -370,6 +370,15 @@ object MainForm: TMainForm
     )
     OnClick = OutputFormatRadioGroupClick
     TabOrder = 3
+  end
+  object AboutButton: TButton
+    Left = 376
+    Height = 25
+    Top = 99
+    Width = 137
+    Caption = 'About'
+    OnClick = AboutButtonClick
+    TabOrder = 4
   end
   object OpenDialog: TOpenDialog
     Filter = 'LMX|*.lmx'

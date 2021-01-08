@@ -6,19 +6,21 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, IniPropStorage{, LCLProc};
+  StdCtrls, ExtCtrls, IniPropStorage{, LCLProc}, about;
 
 type
 
   { TMainForm }
 
   TMainForm = class(TForm)
+    AboutButton: TButton;
     ChooseLMXButton: TButton;
     ConvertButton: TButton;
     IniPropStorage: TIniPropStorage;
     LMXFilePathEdit: TEdit;
     OpenDialog: TOpenDialog;
     OutputFormatRadioGroup: TRadioGroup;
+    procedure AboutButtonClick(Sender: TObject);
     procedure ChooseLMXButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -47,6 +49,11 @@ procedure TMainForm.ChooseLMXButtonClick(Sender: TObject);
 begin
   if OpenDialog.Execute then;
      LMXFilePathEdit.Text := OpenDialog.FileName;
+end;
+
+procedure TMainForm.AboutButtonClick(Sender: TObject);
+begin
+  AboutForm.ShowModal;
 end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
