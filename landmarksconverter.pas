@@ -59,6 +59,7 @@ type
     procedure ProcessLandmark(Landmark: TLandmark); override;
 
     function FindFolderNode(AFolderName: String): TDOMNode;
+    function Addr2Str(AnAddr: TLandmarkAddress): string;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
@@ -322,7 +323,7 @@ var
   DocumentNode, FolderNode, FolderNameNode: TDOMNode;
   CoordsStr: String;
   CatIdx: Integer;
-  Category: String;
+  Category, Addr: String;
 begin
   FixedFormat.DecimalSeparator := '.';
 
@@ -332,6 +333,16 @@ begin
   Element := OutXML.CreateElement('name');
   TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Name));
   PlacemarkElement.AppendChild(Element);
+
+  { Address }
+  // ToDo: Also write xal:AddressDetails element
+  Addr := Addr2Str(Landmark.Address);
+  if Addr <> '' then
+  begin
+    Element := OutXML.CreateElement('address');
+    TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Addr));
+    PlacemarkElement.AppendChild(Element);
+  end;
 
   { Phone number }
   if Landmark.Address.PhoneNumber <> '' then
@@ -409,6 +420,38 @@ begin
   end;
 
   Result := nil; // Nothing found
+end;
+
+function TKMLLandmarksConverter.Addr2Str(AnAddr: TLandmarkAddress): string;
+var
+  AddrList: TStringList;
+  I: Integer;
+  S: String;
+begin
+  Result := '';
+
+  AddrList := TStringList.Create;
+
+  try
+    AddrList.Add(AnAddr.Street);
+    AddrList.Add(AnAddr.City);
+    AddrList.Add(AnAddr.State);
+    AddrList.Add(AnAddr.Country);
+    AddrList.Add(AnAddr.PostalCode);
+
+    for I := 0 to AddrList.Count - 1 do
+    begin
+      S := Trim(AddrList.Strings[I]);
+      if S <> '' then
+        Result := Result + S + ', ';
+    end;
+
+    if Length(Result) >= 2 then
+      Result := LeftStr(Result, Length(Result) - 2);
+
+  finally
+    AddrList.Free;
+  end;
 end;
 
 constructor TKMLLandmarksConverter.Create(AnInFileName: String);
