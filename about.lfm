@@ -3,7 +3,6 @@ object AboutForm: TAboutForm
   Height = 104
   Top = 0
   Width = 371
-  ActiveControl = OpenGitHubButton
   BorderStyle = bsDialog
   Caption = 'About'
   ClientHeight = 104
@@ -28,7 +27,7 @@ object AboutForm: TAboutForm
     Anchors = [akLeft, akBottom]
     Caption = 'GitHub page'
     OnClick = OpenGitHubButtonClick
-    TabOrder = 0
+    TabOrder = 1
   end
   object CloseButton: TButton
     Left = 16
@@ -38,7 +37,7 @@ object AboutForm: TAboutForm
     Anchors = [akLeft, akBottom]
     Caption = 'Ok'
     OnClick = CloseButtonClick
-    TabOrder = 1
+    TabOrder = 0
   end
   object CheckUpdatesButton: TButton
     Left = 232
