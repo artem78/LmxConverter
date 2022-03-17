@@ -5,6 +5,10 @@
 
 Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) to another formats: [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) and [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format). This may be useful if you want to export landmarks from your phone to other programs (like JOSM or Google Earth). Converted file will be saved in folder, where source file located.
 
+## Download
+
+You can download latest build for MS Windows [here](https://github.com/artem78/LmxConverter/releases/latest).
+
 ## How to get lmx-file from my phone?
 1. Go to `Configurations` --> `Landmarks` or `Applications` --> `Location` --> `Landmarks` depending of your Symbian OS version
 1. Select landmarks, which you want to export
@@ -12,7 +16,7 @@ Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) 
 
 ![Landmarks export](img/landmarks-export.gif)
 
-## Exported fields
+## List of exported fields
 
 |                                  | LMX | GPX | KML |
 |----------------------------------|-----|-----|-----|
@@ -26,7 +30,7 @@ Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) 
 | Link                             |     |     |     |
 | Category                         |  +  |     |  +  |
 
-## Convert example
+## Conversion example
 input file `MyLandmarks.lmx`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
