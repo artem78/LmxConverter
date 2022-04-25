@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 0
+  Left = 357
   Height = 139
-  Top = 0
+  Top = 277
   Width = 520
   ActiveControl = ChooseLMXButton
   BorderStyle = bsDialog
@@ -10,8 +10,7 @@ object MainForm: TMainForm
   ClientWidth = 520
   OnCreate = FormCreate
   Position = poDesktopCenter
-  LCLVersion = '1.6.0.4'
-  Visible = False
+  LCLVersion = '2.0.12.0'
   object ChooseLMXButton: TButton
     Left = 374
     Height = 25
@@ -78,14 +77,14 @@ object MainForm: TMainForm
   object OpenDialog: TOpenDialog
     Filter = 'LMX|*.lmx'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
-    left = 248
-    top = 32
+    Left = 248
+    Top = 32
   end
   object IniPropStorage: TIniPropStorage
     StoredValues = <>
     IniFileName = 'config.ini'
     IniSection = 'settings'
-    left = 320
-    top = 32
+    Left = 320
+    Top = 32
   end
 end
