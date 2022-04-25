@@ -32,6 +32,8 @@ type
     InFileName, OutFileName: String;
     InXML: TXMLDocument;
 
+    FProcessedLandmarks: Integer;
+
     function GetFileExtension: String; virtual; abstract;
     procedure ProcessLandmark(Landmark: TLandmark); virtual; abstract;
   public
@@ -39,6 +41,9 @@ type
     destructor Destroy; override;
     property FileExtension: String read GetFileExtension;
     procedure Convert(AnOutFileName: String);
+
+    // Properties
+    property ProcessedLandmarks: Integer read FProcessedLandmarks write FProcessedLandmarks;
   end;
 
   { Base abstract class for XML converter }
@@ -150,6 +155,8 @@ end;
 
 constructor TBaseLandmarksConverter.Create(AnInFileName: String);
 begin
+  Self.FProcessedLandmarks := 0;
+
   Self.InFileName := AnInFileName;
 
   ReadXMLFile(InXML, Self.InFileName);
@@ -281,6 +288,8 @@ begin
 
 
         ProcessLandmark(Landmark);
+
+        Inc(FProcessedLandmarks);
       end;
     finally
       Landmark.Categories.Free;

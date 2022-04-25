@@ -60,7 +60,7 @@ procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
   InFileName, OutFileName: String;
   Converter: TBaseLandmarksConverter;
-  FailMessage: String;
+  FailMessage, SuccessMsg: String;
 begin
   InFileName := LMXFilePathEdit.Text;
 
@@ -104,8 +104,9 @@ begin
   try
     try
       Converter.Convert(OutFileName);
-
-      MessageDlg('Done!', mtInformation, [mbOK], 0);
+      SuccessMsg := Format('%d landmarks have been processed.',
+                 [Converter.ProcessedLandmarks]);
+      MessageDlg('Done!', SuccessMsg, mtInformation, [mbOK], 0);
     except
       on E: Exception do
       begin
