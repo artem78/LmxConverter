@@ -34,3 +34,6 @@ lib/
 /my/
 /Release/
 /config.ini
+
+# Linux executable:
+/lmxconverter
