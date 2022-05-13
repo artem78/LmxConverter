@@ -37,3 +37,7 @@ lib/
 
 # Linux executable:
 /lmxconverter
+
+# Linux build files
+/DEBUILD/
+/DEBUILD.sh
