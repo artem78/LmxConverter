@@ -14,14 +14,14 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TButton;
-    ChooseLMXButton: TButton;
+    ChooseInputFileButton: TButton;
     ConvertButton: TButton;
     IniPropStorage: TIniPropStorage;
-    LMXFilePathEdit: TEdit;
+    InputFilePathEdit: TEdit;
     OpenDialog: TOpenDialog;
     OutputFormatRadioGroup: TRadioGroup;
     procedure AboutButtonClick(Sender: TObject);
-    procedure ChooseLMXButtonClick(Sender: TObject);
+    procedure ChooseInputFileButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OutputFormatRadioGroupClick(Sender: TObject);
@@ -45,10 +45,10 @@ uses
 
 { TMainForm }
 
-procedure TMainForm.ChooseLMXButtonClick(Sender: TObject);
+procedure TMainForm.ChooseInputFileButtonClick(Sender: TObject);
 begin
   if OpenDialog.Execute then;
-     LMXFilePathEdit.Text := OpenDialog.FileName;
+     InputFilePathEdit.Text := OpenDialog.FileName;
 end;
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
@@ -62,7 +62,7 @@ var
   Converter: TBaseLandmarksConverter;
   FailMessage, SuccessMsg: String;
 begin
-  InFileName := LMXFilePathEdit.Text;
+  InFileName := InputFilePathEdit.Text;
 
   // Some checks before
   if InFileName = '' then
