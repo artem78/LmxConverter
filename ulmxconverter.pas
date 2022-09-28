@@ -58,8 +58,8 @@ end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  InFileName, OutFileName: String;
-  Converter: TBaseLandmarksConverter;
+  InFileName, OutFileName, OutFileExt: String;
+  Converter: TLandmarksConverter;
   FailMessage, SuccessMsg: String;
 begin
   InFileName := InputFilePathEdit.Text;
@@ -74,14 +74,12 @@ begin
     Exit;
   end;
 
-
-  // Create converter object depending of output format
   case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
     ofmtKML:
-      Converter := TKMLLandmarksConverter.Create(InFileName);
+      OutFileExt := 'kml';
 
     ofmtGPX:
-      Converter := TGPXLandmarksConverter.Create(InFileName);
+      OutFileExt := 'gpx';
 
     else
     begin
@@ -90,16 +88,18 @@ begin
     end;
   end;
 
-  OutFileName := ChangeFileExt(InFileName, '.' + Converter.FileExtension);
+  OutFileName := ChangeFileExt(InFileName, '.' + OutFileExt);
   if FileExists(OutFileName) then
   begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
          mtConfirmation, mbYesNo, 0) <> mrYes then
     begin
-      Converter.Free;
       Exit;
     end;
   end;
+
+  // Create converter object
+  Converter := TLandmarksConverter.Create(InFileName);
 
   try
     try

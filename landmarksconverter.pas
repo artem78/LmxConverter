@@ -26,159 +26,189 @@ type
     Categories: TStringList;
   end;
 
-  { Abstract class for each landmarks converter }
-  TBaseLandmarksConverter = class
+  TLandmarks = array of TLandmark;
+
+  TBaseLandmarksReader = class;
+  TBaseLandmarksWriter = class;
+
+  { Main converter class }
+
+  TLandmarksConverter = class
   private
-    InFileName, OutFileName: String;
-    InXML: TXMLDocument;
+    Reader: TBaseLandmarksReader;
+    Writer: TBaseLandmarksWriter;
 
     FProcessedLandmarks: Integer;
+  public
+    constructor Create(const AInFileName: String{; const AOutFileName: String});
+    destructor Destroy; override;
+
+    procedure Convert(const AnOutFileName: String);
+
+    property ProcessedLandmarks: Integer read FProcessedLandmarks;
+  end;
+
+  { Abstract class for each landmarks writer }
+  TBaseLandmarksWriter = class
+  private
+    FileName: String;
 
     function GetFileExtension: String; virtual; abstract;
-    procedure ProcessLandmark(Landmark: TLandmark); virtual; abstract;
   public
-    constructor Create(AnInFileName: String);
-    destructor Destroy; override;
+    constructor Create(AFileName: String);
+
     property FileExtension: String read GetFileExtension;
-    procedure Convert(AnOutFileName: String);
-
-    // Properties
-    property ProcessedLandmarks: Integer read FProcessedLandmarks write FProcessedLandmarks;
+    procedure WriteLandmark(Landmark: TLandmark); virtual; abstract;
   end;
 
-  { Base abstract class for XML converter }
-  TXMLLandmarksConverter = class(TBaseLandmarksConverter)
+  { Base abstract class for XML writer }
+  TXMLLandmarksWriter = class(TBaseLandmarksWriter)
   private
-    OutXML: TXMLDocument;
+    XML: TXMLDocument;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
   end;
 
-  { KML converter }
-  TKMLLandmarksConverter = class(TXMLLandmarksConverter)
+  { KML writer }
+  TKMLWriter = class(TXMLLandmarksWriter)
   private
     //RootElement: TDOMNode;
 
     function GetFileExtension: String; override;
-    procedure ProcessLandmark(Landmark: TLandmark); override;
 
     function FindFolderNode(AFolderName: String): TDOMNode;
     function Addr2Str(AnAddr: TLandmarkAddress): string;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
+
+    procedure WriteLandmark(Landmark: TLandmark); override;
   end;
 
-  { GPX converter }
-  TGPXLandmarksConverter = class(TXMLLandmarksConverter)
+  { GPX writer }
+  TGPXWriter = class(TXMLLandmarksWriter)
   private
     RootElement: TDOMNode;
 
     function GetFileExtension: String; override;
-    procedure ProcessLandmark(Landmark: TLandmark); override;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
+
+    procedure WriteLandmark(Landmark: TLandmark); override;
+  end;
+
+
+  { Base class for any reader }
+
+  TBaseLandmarksReader = class
+  private
+    FFileName: String;
+  public
+    constructor Create(const AFileName: String); virtual;
+
+    function ReadLandmarks: TLandmarks; virtual; abstract;
+
+    property FileName: String read FFileName;
+  end;
+
+  { Base XML reader }
+
+  TXMLLandmarksReader = class(TBaseLandmarksReader)
+  protected
+    XML: TXMLDocument;
+  public
+    constructor Create(const AFileName: String); override;
+    destructor Destroy; override;
+  end;
+
+  { LMX reader }
+
+  TLMXReader = class(TXMLLandmarksReader)
+  public
+    function ReadLandmarks: TLandmarks; override;
   end;
 
 implementation
 
-{ TGPXLandmarksConverter }
+{ TLandmarksConverter }
 
-function TGPXLandmarksConverter.GetFileExtension: String;
+constructor TLandmarksConverter.Create(const AInFileName: String{;
+  const AOutFileName: String});
 begin
-  Result := 'gpx';
+  FProcessedLandmarks := 0;
+
+  Reader := TLMXReader.Create(AInFileName);
+  //Writer := TXXXWriter.Create(AOutFileName);
 end;
 
-procedure TGPXLandmarksConverter.ProcessLandmark(Landmark: TLandmark);
+destructor TLandmarksConverter.Destroy;
+begin
+  inherited Destroy;
+
+  //Writer.Free;
+  Reader.Free;
+end;
+
+procedure TLandmarksConverter.Convert(const AnOutFileName: String);
 var
-  FixedFormat: TFormatSettings;
-  WPTNode, EleNode, NameNode, DescNode: TDOMNode;
+  Landmark: TLandmark;
+  Landmarks: TLandmarks;
 begin
-  FixedFormat.DecimalSeparator := '.';
+  FProcessedLandmarks := 0;
 
-  WPTNode := OutXML.CreateElement('wpt');
-  TDOMElement(WPTNode).SetAttribute('lat', FloatToStr(Landmark.Lat, FixedFormat));
-  TDOMElement(WPTNode).SetAttribute('lon', FloatToStr(Landmark.Lon, FixedFormat));
-  RootElement.AppendChild(WPTNode);
+  if AnOutFileName.EndsWith('kml', True) then
+    Writer := TKMLWriter.Create(AnOutFileName)
+  else if AnOutFileName.EndsWith('gpx', True) then
+    Writer := TGPXWriter.Create(AnOutFileName)
+  else
+    raise Exception.Create('Unsupported format!');
 
-  if not IsNan(Landmark.Alt) then
-  begin
-    EleNode := OutXML.CreateElement('ele');
-    EleNode.TextContent := FloatToStr(Landmark.Alt, FixedFormat);
-    WPTNode.AppendChild(EleNode);
+  try
+    Landmarks := Reader.ReadLandmarks;
+    for Landmark in Landmarks do
+    begin
+      try
+        Writer.WriteLandmark(Landmark);
+        Inc(FProcessedLandmarks);
+      except
+      end;
+    end;
+  finally
+    Writer.Free;
   end;
-
-  if Landmark.Name <> '' then
-  begin
-    NameNode := OutXML.CreateElement('name');
-    NameNode.TextContent := Landmark.Name;
-    WPTNode.AppendChild(NameNode);
-  end;
-
-  if Landmark.Description <> '' then
-  begin
-    DescNode := OutXML.CreateElement('desc');
-    DescNode.TextContent := Landmark.Description;
-    WPTNode.AppendChild(DescNode);
-  end;
-
 end;
 
-constructor TGPXLandmarksConverter.Create(AnInFileName: String);
-var
-  GPXNode: TDOMNode;
-begin
-  inherited;
+{ TXMLLandmarksReader }
 
-  GPXNode := OutXML.CreateElement('gpx');
-  with (TDOMElement(GPXNode)) do
-  begin
-    SetAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
-    SetAttribute('version', '1.1');
-    SetAttribute('creator', ''); // ToDo: add this
-    SetAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
-    SetAttribute('xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 ' +
-                 'http://www.topografix.com/GPX/1/1/gpx.xsd')
-  end;
-  OutXML.AppendChild(GPXNode);
-  RootElement := GPXNode;
+constructor TXMLLandmarksReader.Create(const AFileName: String);
+begin
+  inherited Create(AFileName);
+
+  ReadXMLFile(XML, FileName);
 end;
 
-destructor TGPXLandmarksConverter.Destroy;
+destructor TXMLLandmarksReader.Destroy;
 begin
+  XML.Free;
+
   inherited Destroy;
 end;
 
-{ TBaseLandmarksConverter }
+{ TLMXReader }
 
-constructor TBaseLandmarksConverter.Create(AnInFileName: String);
-begin
-  Self.FProcessedLandmarks := 0;
-
-  Self.InFileName := AnInFileName;
-
-  ReadXMLFile(InXML, Self.InFileName);
-end;
-
-destructor TBaseLandmarksConverter.Destroy;
-begin
-  InXML.Free;
-end;
-
-procedure TBaseLandmarksConverter.Convert(AnOutFileName: String);
+function TLMXReader.ReadLandmarks: TLandmarks;
 var
   FixedFormat: TFormatSettings;
   LandmarkNodes{, CategoryNodes}: TDOMNodeList;
   Idx, Idx2: Integer;
   Landmark: TLandmark;
 begin
-  OutFileName := AnOutFileName;
-
   FixedFormat.DecimalSeparator := '.';
 
-  LandmarkNodes := InXML.DocumentElement.GetElementsByTagName('lm:landmark');
+  LandmarkNodes := XML.DocumentElement.GetElementsByTagName('lm:landmark');
+  SetLength(Result, LandmarkNodes.Count);
   for Idx := 0 to LandmarkNodes.Count-1 do
   begin
     // Set default (empty) values
@@ -198,134 +228,209 @@ begin
     Landmark.Categories := TStringList.Create;
 
     // Parse data from input xml
-    try
-      with LandmarkNodes[Idx] do
-      begin
-        // Name
-        try
-          Landmark.Name := FindNode('lm:name').TextContent;
-        except
-        end;
-
-        // Description
-        try
-          Landmark.Description := FindNode('lm:description').TextContent;
-        except
-        end;
-
-        // Coordinates
-        if Assigned(FindNode('lm:coordinates')) then
-        begin
-          with FindNode('lm:coordinates') do
-          begin
-            Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
-            Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
-
-            try
-              Landmark.Alt := StrToFloat(FindNode('lm:altitude').TextContent, FixedFormat)
-            except
-            end;
-
-            try
-              Landmark.HorAccuracy := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent, FixedFormat);
-            except
-            end;
-
-            try
-              Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent, FixedFormat);
-            except
-            end;
-          end;
-        end;
-
-        // Address
-        if Assigned(FindNode('lm:addressInfo')) then
-        begin
-          with FindNode('lm:addressInfo') do
-          begin
-            try
-              Landmark.Address.Street := FindNode('lm:street').TextContent;
-            except
-            end;
-
-            try
-              Landmark.Address.PostalCode := FindNode('lm:postalCode').TextContent;
-            except
-            end;
-
-            try
-              Landmark.Address.City := FindNode('lm:city').TextContent;
-            except
-            end;
-
-            try
-              Landmark.Address.State := FindNode('lm:state').TextContent;
-            except
-            end;
-
-            try
-              Landmark.Address.Country := FindNode('lm:country').TextContent;
-            except
-            end;
-
-            try
-              Landmark.Address.PhoneNumber := FindNode('lm:phoneNumber').TextContent;
-            except
-            end;
-          end;
-        end;
-
-        // Categories
-        {CategoryNodes := TDOMDocument(LandmarkNodes[Idx]).GetElementsByTagName('lm:category'); // SIGPE error
-        for Idx2 := 0 to CategoryNodes.Count - 1 do
-          Landmark.Categories.Append(CategoryNodes[Idx2].FindNode('lm:name').TextContent);}
-        for Idx2 := 0 to ChildNodes.Count - 1 do
-        begin
-          if (ChildNodes[Idx2].NodeType = ELEMENT_NODE)
-              and (ChildNodes[Idx2].NodeName = 'lm:category') then
-            Landmark.Categories.Append(ChildNodes[Idx2].FindNode('lm:name').TextContent);
-        end;
-
-
-        ProcessLandmark(Landmark);
-
-        Inc(FProcessedLandmarks);
+    with LandmarkNodes[Idx] do
+    begin
+      // Name
+      try
+        Landmark.Name := FindNode('lm:name').TextContent;
+      except
       end;
-    finally
-      Landmark.Categories.Free;
+
+      // Description
+      try
+        Landmark.Description := FindNode('lm:description').TextContent;
+      except
+      end;
+
+      // Coordinates
+      if Assigned(FindNode('lm:coordinates')) then
+      begin
+        with FindNode('lm:coordinates') do
+        begin
+          Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
+          Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
+
+          try
+            Landmark.Alt := StrToFloat(FindNode('lm:altitude').TextContent, FixedFormat)
+          except
+          end;
+
+          try
+            Landmark.HorAccuracy := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent, FixedFormat);
+          except
+          end;
+
+          try
+            Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent, FixedFormat);
+          except
+          end;
+        end;
+      end;
+
+      // Address
+      if Assigned(FindNode('lm:addressInfo')) then
+      begin
+        with FindNode('lm:addressInfo') do
+        begin
+          try
+            Landmark.Address.Street := FindNode('lm:street').TextContent;
+          except
+          end;
+
+          try
+            Landmark.Address.PostalCode := FindNode('lm:postalCode').TextContent;
+          except
+          end;
+
+          try
+            Landmark.Address.City := FindNode('lm:city').TextContent;
+          except
+          end;
+
+          try
+            Landmark.Address.State := FindNode('lm:state').TextContent;
+          except
+          end;
+
+          try
+            Landmark.Address.Country := FindNode('lm:country').TextContent;
+          except
+          end;
+
+          try
+            Landmark.Address.PhoneNumber := FindNode('lm:phoneNumber').TextContent;
+          except
+          end;
+        end;
+      end;
+
+      // Categories
+      {CategoryNodes := TDOMDocument(LandmarkNodes[Idx]).GetElementsByTagName('lm:category'); // SIGPE error
+      for Idx2 := 0 to CategoryNodes.Count - 1 do
+        Landmark.Categories.Append(CategoryNodes[Idx2].FindNode('lm:name').TextContent);}
+      for Idx2 := 0 to ChildNodes.Count - 1 do
+      begin
+        if (ChildNodes[Idx2].NodeType = ELEMENT_NODE)
+            and (ChildNodes[Idx2].NodeName = 'lm:category') then
+          Landmark.Categories.Append(ChildNodes[Idx2].FindNode('lm:name').TextContent);
+      end;
+
+
+      Result[Idx] := Landmark;
     end;
   end;
 
   LandmarkNodes.Free;
 end;
 
-{ TXMLLandmarksConverter }
+{ TBaseLandmarksReader }
 
-constructor TXMLLandmarksConverter.Create(AnInFileName: String);
+constructor TBaseLandmarksReader.Create(const AFileName: String);
+begin
+  FFileName := AFileName;
+end;
+
+{ TGPXWriter }
+
+function TGPXWriter.GetFileExtension: String;
+begin
+  Result := 'gpx';
+end;
+
+procedure TGPXWriter.WriteLandmark(Landmark: TLandmark);
+var
+  FixedFormat: TFormatSettings;
+  WPTNode, EleNode, NameNode, DescNode: TDOMNode;
+begin
+  FixedFormat.DecimalSeparator := '.';
+
+  WPTNode := XML.CreateElement('wpt');
+  TDOMElement(WPTNode).SetAttribute('lat', FloatToStr(Landmark.Lat, FixedFormat));
+  TDOMElement(WPTNode).SetAttribute('lon', FloatToStr(Landmark.Lon, FixedFormat));
+  RootElement.AppendChild(WPTNode);
+
+  if not IsNan(Landmark.Alt) then
+  begin
+    EleNode := XML.CreateElement('ele');
+    EleNode.TextContent := FloatToStr(Landmark.Alt, FixedFormat);
+    WPTNode.AppendChild(EleNode);
+  end;
+
+  if Landmark.Name <> '' then
+  begin
+    NameNode := XML.CreateElement('name');
+    NameNode.TextContent := Landmark.Name;
+    WPTNode.AppendChild(NameNode);
+  end;
+
+  if Landmark.Description <> '' then
+  begin
+    DescNode := XML.CreateElement('desc');
+    DescNode.TextContent := Landmark.Description;
+    WPTNode.AppendChild(DescNode);
+  end;
+
+end;
+
+constructor TGPXWriter.Create(AnInFileName: String);
+var
+  GPXNode: TDOMNode;
 begin
   inherited;
 
-  OutXML := TXMLDocument.Create;
+  GPXNode := XML.CreateElement('gpx');
+  with (TDOMElement(GPXNode)) do
+  begin
+    SetAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
+    SetAttribute('version', '1.1');
+    SetAttribute('creator', ''); // ToDo: add this
+    SetAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+    SetAttribute('xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 ' +
+                 'http://www.topografix.com/GPX/1/1/gpx.xsd')
+  end;
+  XML.AppendChild(GPXNode);
+  RootElement := GPXNode;
 end;
 
-destructor TXMLLandmarksConverter.Destroy;
+destructor TGPXWriter.Destroy;
 begin
-  if OutFileName <> '' then
-    WriteXMLFile(OutXML, OutFileName);
+  inherited Destroy;
+end;
 
-  OutXML.Free;
+{ TBaseLandmarksWriter }
+
+constructor TBaseLandmarksWriter.Create(AFileName: String);
+begin
+  Self.FileName := AFileName;
+end;
+
+{ TXMLLandmarksWriter }
+
+constructor TXMLLandmarksWriter.Create(AnInFileName: String);
+begin
+  inherited;
+
+  XML := TXMLDocument.Create;
+end;
+
+destructor TXMLLandmarksWriter.Destroy;
+begin
+  if FileName <> '' then
+    WriteXMLFile(XML, FileName);
+
+  XML.Free;
 
   inherited;
 end;
 
-{ TKMLLandmarksConverter }
+{ TKMLWriter }
 
-function TKMLLandmarksConverter.GetFileExtension: String;
+function TKMLWriter.GetFileExtension: String;
 begin
   Result := 'kml';
 end;
 
-procedure TKMLLandmarksConverter.ProcessLandmark(Landmark: TLandmark);
+procedure TKMLWriter.{ProcessLandmark}WriteLandmark(Landmark: TLandmark);
 var
   FixedFormat: TFormatSettings;
   PlacemarkElement, Element{, PlacemarksRootElement}: TDOMNode;
@@ -336,11 +441,11 @@ var
 begin
   FixedFormat.DecimalSeparator := '.';
 
-  PlacemarkElement := OutXML.CreateElement('Placemark');
+  PlacemarkElement := XML.CreateElement('Placemark');
 
   { Name }
-  Element := OutXML.CreateElement('name');
-  TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Name));
+  Element := XML.CreateElement('name');
+  TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Name));
   PlacemarkElement.AppendChild(Element);
 
   { Address }
@@ -348,41 +453,41 @@ begin
   Addr := Addr2Str(Landmark.Address);
   if Addr <> '' then
   begin
-    Element := OutXML.CreateElement('address');
-    TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Addr));
+    Element := XML.CreateElement('address');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Addr));
     PlacemarkElement.AppendChild(Element);
   end;
 
   { Phone number }
   if Landmark.Address.PhoneNumber <> '' then
   begin
-    Element := OutXML.CreateElement('phoneNumber');
-    TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Address.PhoneNumber));
+    Element := XML.CreateElement('phoneNumber');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.PhoneNumber));
     PlacemarkElement.AppendChild(Element);
   end;
 
   { Description }
   if Landmark.Description <> '' then
   begin
-    Element := OutXML.CreateElement('description');
-    //TDOMDocument(Element).AppendChild(OutXML.CreateTextNode(Landmark.Description));
-    TDOMDocument(Element).AppendChild(OutXML.CreateCDATASection(Landmark.Description));
+    Element := XML.CreateElement('description');
+    //TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Description));
+    TDOMDocument(Element).AppendChild(XML.CreateCDATASection(Landmark.Description));
     PlacemarkElement.AppendChild(Element);
   end;
 
   { Coordinates }
-  Element := PlacemarkElement.AppendChild(OutXML.CreateElement('Point'));
-  Element := Element.AppendChild(OutXML.CreateElement('coordinates'));
+  Element := PlacemarkElement.AppendChild(XML.CreateElement('Point'));
+  Element := Element.AppendChild(XML.CreateElement('coordinates'));
   CoordsStr := FloatToStr(Landmark.Lon, FixedFormat) + ',' +
                FloatToStr(Landmark.Lat, FixedFormat);
   if not IsNan(Landmark.Alt) then      // Altitude is optional
     CoordsStr := CoordsStr + ',' + FloatToStr(Landmark.Alt, FixedFormat);
-  Element := Element.AppendChild(OutXML.CreateTextNode(CoordsStr));
+  Element := Element.AppendChild(XML.CreateTextNode(CoordsStr));
 
   { Category(ies) }
   // NOTE: LMX allow landmark to be included in more then one category.
   //    Therefore in KLM landmark may be duplicated in several folders.
-  DocumentNode := OutXML.GetElementsByTagName('Document').Item[0];
+  DocumentNode := XML.GetElementsByTagName('Document').Item[0];
   if Landmark.Categories.Count <> 0 then
   begin
     for CatIdx := 0 to Landmark.Categories.Count - 1 do
@@ -392,9 +497,9 @@ begin
       if not Assigned(FolderNode) then
       begin
         // Create non-exist folder
-        FolderNode := OutXML.CreateElement('Folder');
-        FolderNameNode := OutXML.CreateElement('name');
-        FolderNameNode.AppendChild(OutXML.CreateTextNode(Category));
+        FolderNode := XML.CreateElement('Folder');
+        FolderNameNode := XML.CreateElement('name');
+        FolderNameNode.AppendChild(XML.CreateTextNode(Category));
         FolderNode.AppendChild(FolderNameNode);
         DocumentNode.AppendChild(FolderNode);
       end;
@@ -413,12 +518,12 @@ begin
   end;
 end;
 
-function TKMLLandmarksConverter.FindFolderNode(AFolderName: String): TDOMNode;
+function TKMLWriter.FindFolderNode(AFolderName: String): TDOMNode;
 var
   FolderNodes: TDOMNodeList;
   Idx: integer;
 begin
-  FolderNodes := OutXML.GetElementsByTagName('Folder');
+  FolderNodes := XML.GetElementsByTagName('Folder');
   for Idx := 0 to FolderNodes.Count - 1 do
   begin
     if FolderNodes[Idx].FindNode('name').TextContent = AFolderName then
@@ -431,7 +536,7 @@ begin
   Result := nil; // Nothing found
 end;
 
-function TKMLLandmarksConverter.Addr2Str(AnAddr: TLandmarkAddress): string;
+function TKMLWriter.Addr2Str(AnAddr: TLandmarkAddress): string;
 var
   AddrList: TStringList;
   I: Integer;
@@ -463,23 +568,23 @@ begin
   end;
 end;
 
-constructor TKMLLandmarksConverter.Create(AnInFileName: String);
+constructor TKMLWriter.Create(AnInFileName: String);
 var
   KMLNode, DocumentNode: TDOMNode;
 begin
   inherited;
 
-  KMLNode := OutXML.CreateElement('kml');
+  KMLNode := XML.CreateElement('kml');
   TDOMElement(KMLNode).SetAttribute('xmlns', 'http://www.opengis.net/kml/2.2');
-  OutXML.AppendChild(KMLNode);
+  XML.AppendChild(KMLNode);
 
-  DocumentNode := OutXML.CreateElement('Document');
+  DocumentNode := XML.CreateElement('Document');
   KMLNode.AppendChild(DocumentNode);
 
 //  RootElement := DocumentNode;
 end;
 
-destructor TKMLLandmarksConverter.Destroy;
+destructor TKMLWriter.Destroy;
 begin
   //RootElement.Free;
 
