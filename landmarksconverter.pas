@@ -162,6 +162,8 @@ type
 
 implementation
 
+uses StrUtils;
+
 { TLMXWriter }
 
 class function TLMXWriter.FileExtension: String;
@@ -322,11 +324,71 @@ end;
 { TKMLReader }
 
 function TKMLReader.ReadLandmarks: TLandmarks;
+var
+  FixedFormat: TFormatSettings;
+  PlacemarkNodes: TDOMNodeList;
+  PlacemarkNode: TDOMNode;
+  Landmark: TLandmark;
+  Idx: Integer;
+  CoordsStr: String;
 begin
-  /////
-  // ToDo: implement
+  FixedFormat.DecimalSeparator := '.';
+
+  PlacemarkNodes := XML.DocumentElement.GetElementsByTagName('Placemark');
   Result := TLandmarks.Create();
-  ////
+  Result.Capacity := PlacemarkNodes.Count;
+  for Idx := 0 to PlacemarkNodes.Count - 1 do
+  begin
+    PlacemarkNode := PlacemarkNodes[Idx];
+    Landmark := TLandmark.Create;
+
+    { Name }
+    try
+      Landmark.Name := PlacemarkNode.FindNode('name').TextContent;
+    except
+    end;
+
+    { Description }
+    try
+      Landmark.Description := PlacemarkNode.FindNode('description').TextContent;
+    except
+    end;
+
+    // ToDo: parse AddressDetails
+
+    { Phone number }
+    try
+      Landmark.Address.PhoneNumber := PlacemarkNode.FindNode('phoneNumber').TextContent;
+    except
+    end;
+
+    { Coordinates }
+    try
+      CoordsStr := PlacemarkNode.FindNode('Point').FindNode('coordinates').TextContent;
+      Landmark.Lat := StrToFloat(ExtractDelimited(1, CoordsStr, [',']), FixedFormat);
+      Landmark.Lon := StrToFloat(ExtractDelimited(2, CoordsStr, [',']), FixedFormat);
+      try
+        Landmark.Alt := StrToFloat(ExtractDelimited(3, CoordsStr, [',']), FixedFormat);
+      except
+        Landmark.Alt := NaN;
+      end;
+    except
+    end;
+
+    { Category }
+    try
+      if PlacemarkNode.ParentNode.NodeName = 'Folder' then
+      begin
+        Landmark.Categories.Append(PlacemarkNode.ParentNode.FindNode('name').TextContent);
+      end;
+    except
+    end;
+
+
+    Result.Add(Landmark);
+  end;
+
+  PlacemarkNodes.Free;
 end;
 
 { TGPXReader }
@@ -374,7 +436,15 @@ constructor TLandmarksConverter.Create(const AInFileName: String{;
 begin
   FProcessedLandmarks := 0;
 
-  Reader := TLMXReader.Create(AInFileName);
+  if AInFileName.EndsWith('.' + TKMLWriter.FileExtension, True) then
+    Reader := TKMLReader.Create(AInFileName)
+  else if AInFileName.EndsWith('.' + TGPXWriter.FileExtension, True) then
+    Reader := TGPXReader.Create(AInFileName)
+  else if AInFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
+    Reader := TLMXReader.Create(AInFileName)
+  else
+    raise Exception.Create('Unsupported format!');
+
   //Writer := TXXXWriter.Create(AOutFileName);
 end;
 
