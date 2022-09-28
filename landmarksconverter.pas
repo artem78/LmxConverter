@@ -12,21 +12,25 @@ Formats documentation/schemas:
 interface
 
 uses
-  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math;
+  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math, fgl;
 
 type
   TLandmarkAddress = record
     Street, PostalCode, City, State, Country, PhoneNumber: String;
   end;
 
-  TLandmark = record
+  TLandmark = class
+  public
     Name, Description: String;
     Lat, Lon, Alt, HorAccuracy, VertAccuracy: Double;
     Address: TLandmarkAddress;
     Categories: TStringList;
+
+    constructor Create;
+    destructor Destroy; override;
   end;
 
-  TLandmarks = array of TLandmark;
+  TLandmarks = specialize TFPGObjectList<TLandmark>;
 
   TBaseLandmarksReader = class;
   TBaseLandmarksWriter = class;
@@ -132,6 +136,34 @@ type
 
 implementation
 
+{ TLandmark }
+
+constructor TLandmark.Create;
+begin
+  Name := '';
+  Description := '';
+  Lat := NaN;
+  Lon := NaN;
+  Alt := NaN;
+  HorAccuracy := NaN;
+  VertAccuracy := NaN;
+  Address.Street := '';
+  Address.PostalCode := '';
+  Address.City := '';
+  Address.State := '';
+  Address.Country := '';
+  Address.PhoneNumber := '';
+  Categories := TStringList.Create;
+end;
+
+destructor TLandmark.Destroy;
+begin
+  Categories.Free;
+  Categories := Nil;
+
+  inherited Destroy;
+end;
+
 { TLandmarksConverter }
 
 constructor TLandmarksConverter.Create(const AInFileName: String{;
@@ -167,13 +199,17 @@ begin
 
   try
     Landmarks := Reader.ReadLandmarks;
-    for Landmark in Landmarks do
-    begin
-      try
-        Writer.WriteLandmark(Landmark);
-        Inc(FProcessedLandmarks);
-      except
+    try
+      for Landmark in Landmarks do
+      begin
+        try
+          Writer.WriteLandmark(Landmark);
+          Inc(FProcessedLandmarks);
+        except
+        end;
       end;
+    finally
+      Landmarks.Free;
     end;
   finally
     Writer.Free;
@@ -208,24 +244,11 @@ begin
   FixedFormat.DecimalSeparator := '.';
 
   LandmarkNodes := XML.DocumentElement.GetElementsByTagName('lm:landmark');
-  SetLength(Result, LandmarkNodes.Count);
+  Result := TLandmarks.Create();
+  Result.Capacity := LandmarkNodes.Count;
   for Idx := 0 to LandmarkNodes.Count-1 do
   begin
-    // Set default (empty) values
-    Landmark.Name := '';
-    Landmark.Description := '';
-    Landmark.Lat := NaN;
-    Landmark.Lon := NaN;
-    Landmark.Alt := NaN;
-    Landmark.HorAccuracy := NaN;
-    Landmark.VertAccuracy := NaN;
-    Landmark.Address.Street := '';
-    Landmark.Address.PostalCode := '';
-    Landmark.Address.City := '';
-    Landmark.Address.State := '';
-    Landmark.Address.Country := '';
-    Landmark.Address.PhoneNumber := '';
-    Landmark.Categories := TStringList.Create;
+    Landmark := TLandmark.Create;
 
     // Parse data from input xml
     with LandmarkNodes[Idx] do
@@ -316,7 +339,7 @@ begin
       end;
 
 
-      Result[Idx] := Landmark;
+      Result.Add(Landmark);
     end;
   end;
 
