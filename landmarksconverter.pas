@@ -106,8 +106,12 @@ type
 
   TLMXWriter = class(TXMLLandmarksWriter)
   private
+    LmCollNode: TDOMNode;
+
     class function FileExtension: String; {override;} static;
   public
+    constructor Create(AnInFileName: String);
+
     procedure WriteLandmark(Landmark: TLandmark); override;
   end;
 
@@ -165,11 +169,154 @@ begin
   Result := 'lmx';
 end;
 
-procedure TLMXWriter.WriteLandmark(Landmark: TLandmark);
+constructor TLMXWriter.Create(AnInFileName: String);
+var
+  LMXNode: TDOMNode;
 begin
-  /////
-  // ToDo: implement
-  ////
+  inherited;
+
+  LMXNode := XML.CreateElement('lm:lmx');
+  with (TDOMElement(LMXNode)) do
+  begin
+    SetAttribute('xmlns:lm', 'http://www.nokia.com/schemas/location/landmarks/1/0');
+    SetAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
+    SetAttribute('xsi:schemaLocation', 'http://www.nokia.com/schemas/location/landmarks/1/0/ lmx.xsd')
+  end;
+  XML.AppendChild(LMXNode);
+
+  LmCollNode := XML.CreateElement('lm:landmarkCollection');
+  //TDOMElement(LmCollNode).SetAttribute('name', 'Landmarks');
+  LMXNode.AppendChild(LmCollNode);
+end;
+
+procedure TLMXWriter.WriteLandmark(Landmark: TLandmark);
+var
+  FixedFormat: TFormatSettings;
+  LandmarkElement, Element, CoordsElem, AddrInfoElem, CatElem: TDOMNode;
+  CategoryName: String;
+begin
+  FixedFormat.DecimalSeparator := '.';
+
+  LandmarkElement := XML.CreateElement('lm:landmark');
+
+  { Name }
+  if not Landmark.Name.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:name');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Name));
+    LandmarkElement.AppendChild(Element);
+  end;
+
+  { Description }
+  if not Landmark.Description.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:description');
+    //TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Description));
+    TDOMDocument(Element).AppendChild(XML.CreateCDATASection(Landmark.Description));
+    LandmarkElement.AppendChild(Element);
+  end;
+
+  { Coordinates }
+  if (not IsNan(Landmark.Lon)) and (not IsNan(Landmark.Lat)) then
+  begin
+    CoordsElem := XML.CreateElement('lm:coordinates');
+
+    Element := XML.CreateElement('lm:latitude');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Lat, FixedFormat)));
+    CoordsElem.AppendChild(Element);
+
+    Element := XML.CreateElement('lm:longitude');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Lon, FixedFormat)));
+    CoordsElem.AppendChild(Element);
+
+    if not IsNan(Landmark.Alt) then
+    begin
+      Element := XML.CreateElement('lm:altitude');
+      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Alt, FixedFormat)));
+      CoordsElem.AppendChild(Element);
+    end;
+
+    if not IsNan(Landmark.HorAccuracy) then
+    begin
+      Element := XML.CreateElement('lm:horizontalAccuracy');
+      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.HorAccuracy, FixedFormat)));
+      CoordsElem.AppendChild(Element);
+    end;
+
+    if not IsNan(Landmark.VertAccuracy) then
+    begin
+      Element := XML.CreateElement('lm:verticalAccuracy');
+      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.VertAccuracy, FixedFormat)));
+      CoordsElem.AppendChild(Element);
+    end;
+
+    LandmarkElement.AppendChild(CoordsElem);
+  end;
+
+
+  { Address }
+  AddrInfoElem := XML.CreateElement('lm:addressInfo');
+
+  if not Landmark.Address.Country.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:country');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.Country));
+    AddrInfoElem.AppendChild(Element);
+  end;
+
+  if not Landmark.Address.State.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:state');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.State));
+    AddrInfoElem.AppendChild(Element);
+  end;
+
+  if not Landmark.Address.City.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:city');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.City));
+    AddrInfoElem.AppendChild(Element);
+  end;
+
+  if not Landmark.Address.PostalCode.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:postalCode');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.PostalCode));
+    AddrInfoElem.AppendChild(Element);
+  end;
+
+  if not Landmark.Address.Street.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:street');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.Street));
+    AddrInfoElem.AppendChild(Element);
+  end;
+
+  if not Landmark.Address.PhoneNumber.IsEmpty then
+  begin
+    Element := XML.CreateElement('lm:phoneNumber');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(Landmark.Address.PhoneNumber));
+    AddrInfoElem.AppendChild(Element);
+  end;
+
+  if AddrInfoElem.ChildNodes.Count > 0 then
+    LandmarkElement.AppendChild(AddrInfoElem)
+  else
+    AddrInfoElem.Free;
+
+
+  { Categories }
+  for CategoryName in Landmark.Categories do
+  begin
+    CatElem := XML.CreateElement('lm:category');
+    Element := XML.CreateElement('lm:name');
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(CategoryName));
+    CatElem.AppendChild(Element);
+    LandmarkElement.AppendChild(CatElem);
+  end;
+
+
+  LmCollNode.AppendChild(LandmarkElement);
 end;
 
 { TKMLReader }
