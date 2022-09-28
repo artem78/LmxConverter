@@ -57,11 +57,10 @@ type
   private
     FileName: String;
 
-    function GetFileExtension: String; virtual; abstract;
+    class function FileExtension: String; virtual; abstract; {static;}
   public
     constructor Create(AFileName: String);
 
-    property FileExtension: String read GetFileExtension;
     procedure WriteLandmark(Landmark: TLandmark); virtual; abstract;
   end;
 
@@ -79,7 +78,7 @@ type
   private
     //RootElement: TDOMNode;
 
-    function GetFileExtension: String; override;
+    class function FileExtension: String; {override;} static;
 
     function FindFolderNode(AFolderName: String): TDOMNode;
     function Addr2Str(AnAddr: TLandmarkAddress): string;
@@ -95,7 +94,7 @@ type
   private
     RootElement: TDOMNode;
 
-    function GetFileExtension: String; override;
+    class function FileExtension: String; {override;} static;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
@@ -190,9 +189,9 @@ var
 begin
   FProcessedLandmarks := 0;
 
-  if AnOutFileName.EndsWith('kml', True) then
+  if AnOutFileName.EndsWith('.' + TKMLWriter.FileExtension, True) then
     Writer := TKMLWriter.Create(AnOutFileName)
-  else if AnOutFileName.EndsWith('gpx', True) then
+  else if AnOutFileName.EndsWith('.' + TGPXWriter.FileExtension, True) then
     Writer := TGPXWriter.Create(AnOutFileName)
   else
     raise Exception.Create('Unsupported format!');
@@ -355,7 +354,7 @@ end;
 
 { TGPXWriter }
 
-function TGPXWriter.GetFileExtension: String;
+class function TGPXWriter.FileExtension: String;
 begin
   Result := 'gpx';
 end;
@@ -448,7 +447,7 @@ end;
 
 { TKMLWriter }
 
-function TKMLWriter.GetFileExtension: String;
+class function TKMLWriter.FileExtension: String;
 begin
   Result := 'kml';
 end;
