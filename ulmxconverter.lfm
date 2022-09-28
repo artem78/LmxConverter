@@ -61,6 +61,7 @@ object MainForm: TMainForm
     Items.Strings = (
       'KML (Keyhole Markup Language)'
       'GPX (GPS eXchange Format)'
+      'LMX (Nokia Landmark Exchange)'
     )
     OnClick = OutputFormatRadioGroupClick
     TabOrder = 2
@@ -75,7 +76,7 @@ object MainForm: TMainForm
     TabOrder = 4
   end
   object OpenDialog: TOpenDialog
-    Filter = 'LMX|*.lmx'
+    Filter = 'Landmark files|*.lmx;*.kml;*.gpx'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
     Left = 248
     Top = 32

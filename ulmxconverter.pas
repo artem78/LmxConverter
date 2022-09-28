@@ -31,7 +31,7 @@ type
     { public declarations }
   end;
 
-  TOutputFormat = (ofmtKML=0, ofmtGPX);
+  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
 
 var
   MainForm: TMainForm;
@@ -81,6 +81,9 @@ begin
     ofmtGPX:
       OutFileExt := 'gpx';
 
+    ofmtLMX:
+      OutFileExt := 'lmx';
+
     else
     begin
       MessageDlg('Unknown format!', mtError, [mbOK], 0);
@@ -127,6 +130,8 @@ begin
   OutFormat := IniPropStorage.ReadString('format', 'kml');
   if OutFormat = 'gpx' then
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtGPX)
+  else if OutFormat = 'lmx' then
+     OutputFormatRadioGroup.ItemIndex := Ord(ofmtLMX)
   else // KML is default
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtKML);
 end;
@@ -139,6 +144,7 @@ begin
   case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
     ofmtKML: OutFormat := 'kml';
     ofmtGPX: OutFormat := 'gpx';
+    ofmtLMX: OutFormat := 'lmx';
     else     raise Exception.Create('Unknown format');
   end;
   IniPropStorage.WriteString('format', OutFormat);

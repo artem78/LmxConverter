@@ -102,6 +102,15 @@ type
     procedure WriteLandmark(Landmark: TLandmark); override;
   end;
 
+  { LMX Writer }
+
+  TLMXWriter = class(TXMLLandmarksWriter)
+  private
+    class function FileExtension: String; {override;} static;
+  public
+    procedure WriteLandmark(Landmark: TLandmark); override;
+  end;
+
 
   { Base class for any reader }
 
@@ -126,6 +135,20 @@ type
     destructor Destroy; override;
   end;
 
+  { KML reader }
+
+  TKMLReader = class(TXMLLandmarksReader)
+  public
+    function ReadLandmarks: TLandmarks; override;
+  end;
+
+  { GPX reader}
+
+  TGPXReader = class(TXMLLandmarksReader)
+  public
+    function ReadLandmarks: TLandmarks; override;
+  end;
+
   { LMX reader }
 
   TLMXReader = class(TXMLLandmarksReader)
@@ -134,6 +157,40 @@ type
   end;
 
 implementation
+
+{ TLMXWriter }
+
+class function TLMXWriter.FileExtension: String;
+begin
+  Result := 'lmx';
+end;
+
+procedure TLMXWriter.WriteLandmark(Landmark: TLandmark);
+begin
+  /////
+  // ToDo: implement
+  ////
+end;
+
+{ TKMLReader }
+
+function TKMLReader.ReadLandmarks: TLandmarks;
+begin
+  /////
+  // ToDo: implement
+  Result := TLandmarks.Create();
+  ////
+end;
+
+{ TGPXReader }
+
+function TGPXReader.ReadLandmarks: TLandmarks;
+begin
+  /////
+  // ToDo: implement
+  Result := TLandmarks.Create();
+  ////
+end;
 
 { TLandmark }
 
@@ -193,6 +250,8 @@ begin
     Writer := TKMLWriter.Create(AnOutFileName)
   else if AnOutFileName.EndsWith('.' + TGPXWriter.FileExtension, True) then
     Writer := TGPXWriter.Create(AnOutFileName)
+  else if AnOutFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
+    Writer := TLMXWriter.Create(AnOutFileName)
   else
     raise Exception.Create('Unsupported format!');
 
