@@ -430,11 +430,68 @@ end;
 { TGPXReader }
 
 function TGPXReader.ReadLandmarks: TLandmarks;
+var
+  WptNodes: TDOMNodeList;
+  WptNode: TDOMNode;
+  Idx: Integer;
+  Landmark: TLandmark;
 begin
-  /////
-  // ToDo: implement
+  WptNodes := XML.DocumentElement.GetElementsByTagName('wpt');
   Result := TLandmarks.Create();
-  ////
+  Result.Capacity := WptNodes.Count;
+  for Idx := 0 to WptNodes.Count - 1 do
+  begin
+    WptNode := WptNodes[Idx];
+    Landmark := TLandmark.Create;
+
+    { Coordinates }
+
+    try
+      Landmark.Lat := StrToFloat(TDOMElement(WptNode).GetAttribute('lat'));
+    except
+    end;
+
+    try
+      Landmark.Lon := StrToFloat(TDOMElement(WptNode).GetAttribute('lon'));
+    except
+    end;
+
+    try
+      Landmark.Alt := StrToFloat(WptNode.FindNode('ele').TextContent);
+    except
+    end;
+
+
+    { Name }
+    try
+      Landmark.Name := WptNode.FindNode('name').TextContent;
+    except
+    end;
+
+    { Description }
+
+    // ToDo: What is the difference between 'desc' (description) and 'cmt' (comment) elements?
+
+    try
+      Landmark.Description := WptNode.FindNode('desc').TextContent;
+    except
+    end;
+
+    // Try to read 'cmt' tag as fallback
+    if Landmark.Description.IsEmpty then
+    begin
+      try
+        Landmark.Description := WptNode.FindNode('cmt').TextContent;
+      except
+      end;
+    end;
+
+
+    Result.Add(Landmark);
+
+  end;
+
+  WptNodes.Free;
 end;
 
 { TLandmark }
