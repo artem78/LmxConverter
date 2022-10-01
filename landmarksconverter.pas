@@ -68,6 +68,8 @@ type
   TXMLLandmarksWriter = class(TBaseLandmarksWriter)
   private
     XML: TXMLDocument;
+
+    class function FloatToStr(AFloat: Double): String; static;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
@@ -134,6 +136,8 @@ type
   TXMLLandmarksReader = class(TBaseLandmarksReader)
   protected
     XML: TXMLDocument;
+
+    class function StrToFloat(const AStr: String): Double; static;
   public
     constructor Create(const AFileName: String); override;
     destructor Destroy; override;
@@ -164,6 +168,9 @@ implementation
 
 uses StrUtils;
 
+const
+  XMLDecimalSeparator: Char = '.';
+
 { TLMXWriter }
 
 class function TLMXWriter.FileExtension: String;
@@ -193,12 +200,9 @@ end;
 
 procedure TLMXWriter.WriteLandmark(Landmark: TLandmark);
 var
-  FixedFormat: TFormatSettings;
   LandmarkElement, Element, CoordsElem, AddrInfoElem, CatElem: TDOMNode;
   CategoryName: String;
 begin
-  FixedFormat.DecimalSeparator := '.';
-
   LandmarkElement := XML.CreateElement('lm:landmark');
 
   { Name }
@@ -224,31 +228,31 @@ begin
     CoordsElem := XML.CreateElement('lm:coordinates');
 
     Element := XML.CreateElement('lm:latitude');
-    TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Lat, FixedFormat)));
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Lat)));
     CoordsElem.AppendChild(Element);
 
     Element := XML.CreateElement('lm:longitude');
-    TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Lon, FixedFormat)));
+    TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Lon)));
     CoordsElem.AppendChild(Element);
 
     if not IsNan(Landmark.Alt) then
     begin
       Element := XML.CreateElement('lm:altitude');
-      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Alt, FixedFormat)));
+      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.Alt)));
       CoordsElem.AppendChild(Element);
     end;
 
     if not IsNan(Landmark.HorAccuracy) then
     begin
       Element := XML.CreateElement('lm:horizontalAccuracy');
-      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.HorAccuracy, FixedFormat)));
+      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.HorAccuracy)));
       CoordsElem.AppendChild(Element);
     end;
 
     if not IsNan(Landmark.VertAccuracy) then
     begin
       Element := XML.CreateElement('lm:verticalAccuracy');
-      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.VertAccuracy, FixedFormat)));
+      TDOMDocument(Element).AppendChild(XML.CreateTextNode(FloatToStr(Landmark.VertAccuracy)));
       CoordsElem.AppendChild(Element);
     end;
 
@@ -325,15 +329,12 @@ end;
 
 function TKMLReader.ReadLandmarks: TLandmarks;
 var
-  FixedFormat: TFormatSettings;
   PlacemarkNodes: TDOMNodeList;
   PlacemarkNode: TDOMNode;
   Landmark: TLandmark;
   Idx: Integer;
   CoordsStr: String;
 begin
-  FixedFormat.DecimalSeparator := '.';
-
   PlacemarkNodes := XML.DocumentElement.GetElementsByTagName('Placemark');
   Result := TLandmarks.Create();
   Result.Capacity := PlacemarkNodes.Count;
@@ -365,10 +366,10 @@ begin
     { Coordinates }
     try
       CoordsStr := PlacemarkNode.FindNode('Point').FindNode('coordinates').TextContent;
-      Landmark.Lat := StrToFloat(ExtractDelimited(1, CoordsStr, [',']), FixedFormat);
-      Landmark.Lon := StrToFloat(ExtractDelimited(2, CoordsStr, [',']), FixedFormat);
+      Landmark.Lat := StrToFloat(ExtractDelimited(1, CoordsStr, [',']));
+      Landmark.Lon := StrToFloat(ExtractDelimited(2, CoordsStr, [',']));
       try
-        Landmark.Alt := StrToFloat(ExtractDelimited(3, CoordsStr, [',']), FixedFormat);
+        Landmark.Alt := StrToFloat(ExtractDelimited(3, CoordsStr, [',']));
       except
         Landmark.Alt := NaN;
       end;
@@ -493,6 +494,14 @@ end;
 
 { TXMLLandmarksReader }
 
+class function TXMLLandmarksReader.StrToFloat(const AStr: String): Double;
+var
+  Fmt: TFormatSettings;
+begin
+  Fmt.DecimalSeparator := XMLDecimalSeparator;
+  Result := SysUtils.StrToFloat(AStr, Fmt);
+end;
+
 constructor TXMLLandmarksReader.Create(const AFileName: String);
 begin
   inherited Create(AFileName);
@@ -511,13 +520,10 @@ end;
 
 function TLMXReader.ReadLandmarks: TLandmarks;
 var
-  FixedFormat: TFormatSettings;
   LandmarkNodes{, CategoryNodes}: TDOMNodeList;
   Idx, Idx2: Integer;
   Landmark: TLandmark;
 begin
-  FixedFormat.DecimalSeparator := '.';
-
   LandmarkNodes := XML.DocumentElement.GetElementsByTagName('lm:landmark');
   Result := TLandmarks.Create();
   Result.Capacity := LandmarkNodes.Count;
@@ -545,21 +551,21 @@ begin
       begin
         with FindNode('lm:coordinates') do
         begin
-          Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent, FixedFormat);
-          Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent, FixedFormat);
+          Landmark.Lat := StrToFloat(FindNode('lm:latitude').TextContent);
+          Landmark.Lon := StrToFloat(FindNode('lm:longitude').TextContent);
 
           try
-            Landmark.Alt := StrToFloat(FindNode('lm:altitude').TextContent, FixedFormat)
+            Landmark.Alt := StrToFloat(FindNode('lm:altitude').TextContent)
           except
           end;
 
           try
-            Landmark.HorAccuracy := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent, FixedFormat);
+            Landmark.HorAccuracy := StrToFloat(FindNode('lm:horizontalAccuracy').TextContent);
           except
           end;
 
           try
-            Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent, FixedFormat);
+            Landmark.VertAccuracy := StrToFloat(FindNode('lm:verticalAccuracy').TextContent);
           except
           end;
         end;
@@ -637,20 +643,17 @@ end;
 
 procedure TGPXWriter.WriteLandmark(Landmark: TLandmark);
 var
-  FixedFormat: TFormatSettings;
   WPTNode, EleNode, NameNode, DescNode: TDOMNode;
 begin
-  FixedFormat.DecimalSeparator := '.';
-
   WPTNode := XML.CreateElement('wpt');
-  TDOMElement(WPTNode).SetAttribute('lat', FloatToStr(Landmark.Lat, FixedFormat));
-  TDOMElement(WPTNode).SetAttribute('lon', FloatToStr(Landmark.Lon, FixedFormat));
+  TDOMElement(WPTNode).SetAttribute('lat', FloatToStr(Landmark.Lat));
+  TDOMElement(WPTNode).SetAttribute('lon', FloatToStr(Landmark.Lon));
   RootElement.AppendChild(WPTNode);
 
   if not IsNan(Landmark.Alt) then
   begin
     EleNode := XML.CreateElement('ele');
-    EleNode.TextContent := FloatToStr(Landmark.Alt, FixedFormat);
+    EleNode.TextContent := FloatToStr(Landmark.Alt);
     WPTNode.AppendChild(EleNode);
   end;
 
@@ -704,6 +707,14 @@ end;
 
 { TXMLLandmarksWriter }
 
+class function TXMLLandmarksWriter.FloatToStr(AFloat: Double): String;
+  var
+  Fmt: TFormatSettings;
+begin
+  Fmt.DecimalSeparator := XMLDecimalSeparator;
+  Result := SysUtils.FloatToStr(AFloat, Fmt);
+end;
+
 constructor TXMLLandmarksWriter.Create(AnInFileName: String);
 begin
   inherited;
@@ -730,15 +741,12 @@ end;
 
 procedure TKMLWriter.{ProcessLandmark}WriteLandmark(Landmark: TLandmark);
 var
-  FixedFormat: TFormatSettings;
   PlacemarkElement, Element{, PlacemarksRootElement}: TDOMNode;
   DocumentNode, FolderNode, FolderNameNode: TDOMNode;
   CoordsStr: String;
   CatIdx: Integer;
   Category, Addr: String;
 begin
-  FixedFormat.DecimalSeparator := '.';
-
   PlacemarkElement := XML.CreateElement('Placemark');
 
   { Name }
@@ -776,10 +784,10 @@ begin
   { Coordinates }
   Element := PlacemarkElement.AppendChild(XML.CreateElement('Point'));
   Element := Element.AppendChild(XML.CreateElement('coordinates'));
-  CoordsStr := FloatToStr(Landmark.Lon, FixedFormat) + ',' +
-               FloatToStr(Landmark.Lat, FixedFormat);
+  CoordsStr := FloatToStr(Landmark.Lon) + ',' +
+               FloatToStr(Landmark.Lat);
   if not IsNan(Landmark.Alt) then      // Altitude is optional
-    CoordsStr := CoordsStr + ',' + FloatToStr(Landmark.Alt, FixedFormat);
+    CoordsStr := CoordsStr + ',' + FloatToStr(Landmark.Alt);
   Element := Element.AppendChild(XML.CreateTextNode(CoordsStr));
 
   { Category(ies) }
