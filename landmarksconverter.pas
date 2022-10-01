@@ -8,6 +8,7 @@ Formats documentation/schemas:
 }
 
 {$mode objfpc}{$H+}
+{$modeswitch advancedrecords}
 
 interface
 
@@ -17,6 +18,7 @@ uses
 type
   TLandmarkAddress = record
     Street, PostalCode, City, State, Country, PhoneNumber: String;
+    function ToString: String;
   end;
 
   TLandmark = class
@@ -83,7 +85,6 @@ type
     class function FileExtension: String; {override;} static;
 
     function FindFolderNode(AFolderName: String): TDOMNode;
-    function Addr2Str(AnAddr: TLandmarkAddress): string;
   public
     constructor Create(AnInFileName: String);
     destructor Destroy; override;
@@ -170,6 +171,40 @@ uses StrUtils;
 
 const
   XMLDecimalSeparator: Char = '.';
+
+{ TLandmarkAddress }
+
+function TLandmarkAddress.ToString: String;
+var
+  AddrList: TStringList;
+  I: Integer;
+  S: String;
+begin
+  Result := '';
+
+  AddrList := TStringList.Create;
+
+  try
+    AddrList.Add(Street);
+    AddrList.Add(City);
+    AddrList.Add(State);
+    AddrList.Add(Country);
+    AddrList.Add(PostalCode);
+
+    for I := 0 to AddrList.Count - 1 do
+    begin
+      S := Trim(AddrList.Strings[I]);
+      if S <> '' then
+        Result := Result + S + ', ';
+    end;
+
+    if Length(Result) >= 2 then
+      Result := LeftStr(Result, Length(Result) - 2);
+
+  finally
+    AddrList.Free;
+  end;
+end;
 
 { TLMXWriter }
 
@@ -756,7 +791,7 @@ begin
 
   { Address }
   // ToDo: Also write xal:AddressDetails element
-  Addr := Addr2Str(Landmark.Address);
+  Addr := Landmark.Address.ToString;
   if Addr <> '' then
   begin
     Element := XML.CreateElement('address');
@@ -840,38 +875,6 @@ begin
   end;
 
   Result := nil; // Nothing found
-end;
-
-function TKMLWriter.Addr2Str(AnAddr: TLandmarkAddress): string;
-var
-  AddrList: TStringList;
-  I: Integer;
-  S: String;
-begin
-  Result := '';
-
-  AddrList := TStringList.Create;
-
-  try
-    AddrList.Add(AnAddr.Street);
-    AddrList.Add(AnAddr.City);
-    AddrList.Add(AnAddr.State);
-    AddrList.Add(AnAddr.Country);
-    AddrList.Add(AnAddr.PostalCode);
-
-    for I := 0 to AddrList.Count - 1 do
-    begin
-      S := Trim(AddrList.Strings[I]);
-      if S <> '' then
-        Result := Result + S + ', ';
-    end;
-
-    if Length(Result) >= 2 then
-      Result := LeftStr(Result, Length(Result) - 2);
-
-  finally
-    AddrList.Free;
-  end;
 end;
 
 constructor TKMLWriter.Create(AnInFileName: String);
