@@ -75,7 +75,7 @@ type
 
     class function FloatToStr(AFloat: Double): String; static;
   public
-    constructor Create(AnInFileName: String; const ACreator: String = '');
+    constructor Create(AFileName: String; const ACreator: String = '');
     destructor Destroy; override;
   end;
 
@@ -88,7 +88,7 @@ type
 
     function FindFolderNode(AFolderName: String): TDOMNode;
   public
-    constructor Create(AnInFileName: String; const ACreator: String = '');
+    constructor Create(AFileName: String; const ACreator: String = '');
     destructor Destroy; override;
 
     procedure WriteLandmark(Landmark: TLandmark); override;
@@ -101,7 +101,7 @@ type
 
     class function FileExtension: String; {override;} static;
   public
-    constructor Create(AnInFileName: String; const ACreator: String = '');
+    constructor Create(AFileName: String; const ACreator: String = '');
     destructor Destroy; override;
 
     procedure WriteLandmark(Landmark: TLandmark); override;
@@ -115,7 +115,7 @@ type
 
     class function FileExtension: String; {override;} static;
   public
-    constructor Create(AnInFileName: String; const ACreator: String = '');
+    constructor Create(AFileName: String; const ACreator: String = '');
 
     procedure WriteLandmark(Landmark: TLandmark); override;
   end;
@@ -215,7 +215,7 @@ begin
   Result := 'lmx';
 end;
 
-constructor TLMXWriter.Create(AnInFileName: String; const ACreator: String);
+constructor TLMXWriter.Create(AFileName: String; const ACreator: String);
 var
   LMXNode: TDOMNode;
 begin
@@ -768,7 +768,7 @@ begin
 
 end;
 
-constructor TGPXWriter.Create(AnInFileName: String; const ACreator: String);
+constructor TGPXWriter.Create(AFileName: String; const ACreator: String);
 var
   GPXNode: TDOMNode;
 begin
@@ -811,7 +811,7 @@ begin
   Result := SysUtils.FloatToStr(AFloat, Fmt);
 end;
 
-constructor TXMLLandmarksWriter.Create(AnInFileName: String; const ACreator: String);
+constructor TXMLLandmarksWriter.Create(AFileName: String; const ACreator: String);
 begin
   inherited;
 
@@ -938,7 +938,7 @@ begin
   Result := nil; // Nothing found
 end;
 
-constructor TKMLWriter.Create(AnInFileName: String; const ACreator: String);
+constructor TKMLWriter.Create(AFileName: String; const ACreator: String);
 var
   KMLNode, DocumentNode: TDOMNode;
 begin
