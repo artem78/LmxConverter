@@ -401,8 +401,8 @@ begin
     { Coordinates }
     try
       CoordsStr := PlacemarkNode.FindNode('Point').FindNode('coordinates').TextContent;
-      Landmark.Lat := StrToFloat(ExtractDelimited(1, CoordsStr, [',']));
-      Landmark.Lon := StrToFloat(ExtractDelimited(2, CoordsStr, [',']));
+      Landmark.Lon := StrToFloat(ExtractDelimited(1, CoordsStr, [',']));
+      Landmark.Lat := StrToFloat(ExtractDelimited(2, CoordsStr, [',']));
       try
         Landmark.Alt := StrToFloat(ExtractDelimited(3, CoordsStr, [',']));
       except
