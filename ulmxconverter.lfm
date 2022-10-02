@@ -2,40 +2,40 @@ object MainForm: TMainForm
   Left = 357
   Height = 139
   Top = 277
-  Width = 520
-  ActiveControl = ChooseLMXButton
+  Width = 579
+  ActiveControl = ChooseInputFileButton
   BorderStyle = bsDialog
   Caption = 'LMX Converter'
   ClientHeight = 139
-  ClientWidth = 520
+  ClientWidth = 579
   OnCreate = FormCreate
   Position = poScreenCenter
   LCLVersion = '2.0.12.0'
-  object ChooseLMXButton: TButton
-    Left = 374
+  object ChooseInputFileButton: TButton
+    Left = 408
     Height = 25
     Top = 8
-    Width = 139
+    Width = 164
     Anchors = [akTop, akRight]
-    Caption = 'Choose LMX file...'
-    OnClick = ChooseLMXButtonClick
+    Caption = 'Choose landmark file...'
+    OnClick = ChooseInputFileButtonClick
     TabOrder = 1
   end
   object ConvertButton: TButton
-    Left = 374
+    Left = 408
     Height = 25
     Top = 56
-    Width = 139
+    Width = 164
     Anchors = [akRight, akBottom]
     Caption = 'Convert'
     OnClick = ConvertButtonClick
     TabOrder = 3
   end
-  object LMXFilePathEdit: TEdit
+  object InputFilePathEdit: TEdit
     Left = 8
     Height = 23
     Top = 8
-    Width = 358
+    Width = 387
     Anchors = [akTop, akLeft, akRight]
     ReadOnly = True
     TabOrder = 0
@@ -44,7 +44,7 @@ object MainForm: TMainForm
     Left = 8
     Height = 76
     Top = 48
-    Width = 358
+    Width = 387
     Anchors = [akTop, akLeft, akRight, akBottom]
     AutoFill = True
     Caption = 'Output format:'
@@ -56,26 +56,28 @@ object MainForm: TMainForm
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
     ClientHeight = 56
-    ClientWidth = 354
+    ClientWidth = 383
     ItemIndex = 0
     Items.Strings = (
       'KML (Keyhole Markup Language)'
       'GPX (GPS eXchange Format)'
+      'LMX (Nokia Landmark Exchange)'
     )
     OnClick = OutputFormatRadioGroupClick
     TabOrder = 2
   end
   object AboutButton: TButton
-    Left = 374
+    Left = 408
     Height = 25
     Top = 99
-    Width = 139
+    Width = 164
+    Anchors = [akTop, akRight]
     Caption = 'About...'
     OnClick = AboutButtonClick
     TabOrder = 4
   end
   object OpenDialog: TOpenDialog
-    Filter = 'LMX|*.lmx'
+    Filter = 'Landmark files|*.lmx;*.kml;*.gpx'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
     Left = 248
     Top = 32

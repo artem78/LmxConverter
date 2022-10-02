@@ -14,14 +14,14 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TButton;
-    ChooseLMXButton: TButton;
+    ChooseInputFileButton: TButton;
     ConvertButton: TButton;
     IniPropStorage: TIniPropStorage;
-    LMXFilePathEdit: TEdit;
+    InputFilePathEdit: TEdit;
     OpenDialog: TOpenDialog;
     OutputFormatRadioGroup: TRadioGroup;
     procedure AboutButtonClick(Sender: TObject);
-    procedure ChooseLMXButtonClick(Sender: TObject);
+    procedure ChooseInputFileButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OutputFormatRadioGroupClick(Sender: TObject);
@@ -31,7 +31,7 @@ type
     { public declarations }
   end;
 
-  TOutputFormat = (ofmtKML=0, ofmtGPX);
+  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
 
 var
   MainForm: TMainForm;
@@ -45,10 +45,10 @@ uses
 
 { TMainForm }
 
-procedure TMainForm.ChooseLMXButtonClick(Sender: TObject);
+procedure TMainForm.ChooseInputFileButtonClick(Sender: TObject);
 begin
   if OpenDialog.Execute then;
-     LMXFilePathEdit.Text := OpenDialog.FileName;
+     InputFilePathEdit.Text := OpenDialog.FileName;
 end;
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
@@ -58,11 +58,11 @@ end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  InFileName, OutFileName: String;
-  Converter: TBaseLandmarksConverter;
+  InFileName, OutFileName, OutFileExt: String;
+  Converter: TLandmarksConverter;
   FailMessage, SuccessMsg: String;
 begin
-  InFileName := LMXFilePathEdit.Text;
+  InFileName := InputFilePathEdit.Text;
 
   // Some checks before
   if InFileName = '' then
@@ -74,14 +74,15 @@ begin
     Exit;
   end;
 
-
-  // Create converter object depending of output format
   case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
     ofmtKML:
-      Converter := TKMLLandmarksConverter.Create(InFileName);
+      OutFileExt := 'kml';
 
     ofmtGPX:
-      Converter := TGPXLandmarksConverter.Create(InFileName);
+      OutFileExt := 'gpx';
+
+    ofmtLMX:
+      OutFileExt := 'lmx';
 
     else
     begin
@@ -90,16 +91,18 @@ begin
     end;
   end;
 
-  OutFileName := ChangeFileExt(InFileName, '.' + Converter.FileExtension);
+  OutFileName := ChangeFileExt(InFileName, '.' + OutFileExt);
   if FileExists(OutFileName) then
   begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
          mtConfirmation, mbYesNo, 0) <> mrYes then
     begin
-      Converter.Free;
       Exit;
     end;
   end;
+
+  // Create converter object
+  Converter := TLandmarksConverter.Create(InFileName);
 
   try
     try
@@ -135,6 +138,8 @@ begin
   OutFormat := IniPropStorage.ReadString('format', 'kml');
   if OutFormat = 'gpx' then
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtGPX)
+  else if OutFormat = 'lmx' then
+     OutputFormatRadioGroup.ItemIndex := Ord(ofmtLMX)
   else // KML is default
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtKML);
 end;
@@ -147,6 +152,7 @@ begin
   case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
     ofmtKML: OutFormat := 'kml';
     ofmtGPX: OutFormat := 'gpx';
+    ofmtLMX: OutFormat := 'lmx';
     else     raise Exception.Create('Unknown format');
   end;
   IniPropStorage.WriteString('format', OutFormat);
