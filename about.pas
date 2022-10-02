@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  LCLIntf, fileinfo, winpeimagereader;
+  LCLIntf, winpeimagereader;
 
 type
 
@@ -32,6 +32,8 @@ var
 
 implementation
 
+uses Utils;
+
 {$R *.lfm}
 
 { TAboutForm }
@@ -52,23 +54,8 @@ begin
 end;
 
 procedure TAboutForm.FormCreate(Sender: TObject);
-var
-  FileVerInfo: TFileVersionInfo;
-  Ver: string;
 begin
-  Ver := 'unknown';
-
-  FileVerInfo:=TFileVersionInfo.Create(nil);
-  try
-    FileVerInfo.ReadFileInfo;
-    Ver := FileVerInfo.VersionStrings.Values['ProductVersion'];
-    if Ver = '' then
-      Ver := FileVerInfo.VersionStrings.Values['FileVersion'];
-  finally
-    FileVerInfo.Free;
-  end;
-
-  Label1.Caption := Format(Label1.Caption, [Ver, {$I %DATE%} + ' ' + {$I %TIME%}]);
+  Label1.Caption := Format(Label1.Caption, [ProgramVersionStr, {$I %DATE%} + ' ' + {$I %TIME%}]);
 end;
 
 end.
