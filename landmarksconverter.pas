@@ -798,7 +798,7 @@ end;
 constructor TBaseLandmarksWriter.Create(AFileName: String; const ACreator: String);
 begin
   Self.FileName := AFileName;
-  Creator := ACreator;
+  //Creator := ACreator;
 end;
 
 { TXMLLandmarksWriter }
