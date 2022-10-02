@@ -46,6 +46,8 @@ type
 
     FProcessedLandmarks: Integer;
   public
+    Creator: String;
+
     constructor Create(const AInFileName: String{; const AOutFileName: String});
     destructor Destroy; override;
 
@@ -57,11 +59,11 @@ type
   { Abstract class for each landmarks writer }
   TBaseLandmarksWriter = class
   private
-    FileName: String;
+    FileName{, Creator}: String;
 
     class function FileExtension: String; virtual; abstract; {static;}
   public
-    constructor Create(AFileName: String);
+    constructor Create(AFileName: String; const ACreator: String = '');
 
     procedure WriteLandmark(Landmark: TLandmark); virtual; abstract;
   end;
@@ -73,7 +75,7 @@ type
 
     class function FloatToStr(AFloat: Double): String; static;
   public
-    constructor Create(AnInFileName: String);
+    constructor Create(AnInFileName: String; const ACreator: String = '');
     destructor Destroy; override;
   end;
 
@@ -86,7 +88,7 @@ type
 
     function FindFolderNode(AFolderName: String): TDOMNode;
   public
-    constructor Create(AnInFileName: String);
+    constructor Create(AnInFileName: String; const ACreator: String = '');
     destructor Destroy; override;
 
     procedure WriteLandmark(Landmark: TLandmark); override;
@@ -99,7 +101,7 @@ type
 
     class function FileExtension: String; {override;} static;
   public
-    constructor Create(AnInFileName: String);
+    constructor Create(AnInFileName: String; const ACreator: String = '');
     destructor Destroy; override;
 
     procedure WriteLandmark(Landmark: TLandmark); override;
@@ -113,7 +115,7 @@ type
 
     class function FileExtension: String; {override;} static;
   public
-    constructor Create(AnInFileName: String);
+    constructor Create(AnInFileName: String; const ACreator: String = '');
 
     procedure WriteLandmark(Landmark: TLandmark); override;
   end;
@@ -213,7 +215,7 @@ begin
   Result := 'lmx';
 end;
 
-constructor TLMXWriter.Create(AnInFileName: String);
+constructor TLMXWriter.Create(AnInFileName: String; const ACreator: String);
 var
   LMXNode: TDOMNode;
 begin
@@ -528,6 +530,7 @@ constructor TLandmarksConverter.Create(const AInFileName: String{;
   const AOutFileName: String});
 begin
   FProcessedLandmarks := 0;
+  Creator := '';
 
   if AInFileName.EndsWith('.' + TKMLWriter.FileExtension, True) then
     Reader := TKMLReader.Create(AInFileName)
@@ -557,11 +560,11 @@ begin
   FProcessedLandmarks := 0;
 
   if AnOutFileName.EndsWith('.' + TKMLWriter.FileExtension, True) then
-    Writer := TKMLWriter.Create(AnOutFileName)
+    Writer := TKMLWriter.Create(AnOutFileName, Creator)
   else if AnOutFileName.EndsWith('.' + TGPXWriter.FileExtension, True) then
-    Writer := TGPXWriter.Create(AnOutFileName)
+    Writer := TGPXWriter.Create(AnOutFileName, Creator)
   else if AnOutFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
-    Writer := TLMXWriter.Create(AnOutFileName)
+    Writer := TLMXWriter.Create(AnOutFileName, Creator)
   else
     raise Exception.Create('Unsupported format!');
 
@@ -765,7 +768,7 @@ begin
 
 end;
 
-constructor TGPXWriter.Create(AnInFileName: String);
+constructor TGPXWriter.Create(AnInFileName: String; const ACreator: String);
 var
   GPXNode: TDOMNode;
 begin
@@ -776,7 +779,7 @@ begin
   begin
     SetAttribute('xmlns', 'http://www.topografix.com/GPX/1/1');
     SetAttribute('version', '1.1');
-    SetAttribute('creator', ''); // ToDo: add this
+    SetAttribute('creator', ACreator);
     SetAttribute('xmlns:xsi', 'http://www.w3.org/2001/XMLSchema-instance');
     SetAttribute('xsi:schemaLocation', 'http://www.topografix.com/GPX/1/1 ' +
                  'http://www.topografix.com/GPX/1/1/gpx.xsd')
@@ -792,9 +795,10 @@ end;
 
 { TBaseLandmarksWriter }
 
-constructor TBaseLandmarksWriter.Create(AFileName: String);
+constructor TBaseLandmarksWriter.Create(AFileName: String; const ACreator: String);
 begin
   Self.FileName := AFileName;
+  Creator := ACreator;
 end;
 
 { TXMLLandmarksWriter }
@@ -807,7 +811,7 @@ begin
   Result := SysUtils.FloatToStr(AFloat, Fmt);
 end;
 
-constructor TXMLLandmarksWriter.Create(AnInFileName: String);
+constructor TXMLLandmarksWriter.Create(AnInFileName: String; const ACreator: String);
 begin
   inherited;
 
@@ -934,7 +938,7 @@ begin
   Result := nil; // Nothing found
 end;
 
-constructor TKMLWriter.Create(AnInFileName: String);
+constructor TKMLWriter.Create(AnInFileName: String; const ACreator: String);
 var
   KMLNode, DocumentNode: TDOMNode;
 begin

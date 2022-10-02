@@ -39,7 +39,7 @@ var
 implementation
 
 uses
-  LandmarksConverter;
+  LandmarksConverter, Utils;
 
 {$R *.lfm}
 
@@ -103,6 +103,7 @@ begin
 
   // Create converter object
   Converter := TLandmarksConverter.Create(InFileName);
+  Converter.Creator := 'LMX Converter ' + ProgramVersionStr;
 
   try
     try
