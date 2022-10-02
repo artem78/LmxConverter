@@ -804,7 +804,7 @@ end;
 { TXMLLandmarksWriter }
 
 class function TXMLLandmarksWriter.FloatToStr(AFloat: Double): String;
-  var
+var
   Fmt: TFormatSettings;
 begin
   Fmt.DecimalSeparator := XMLDecimalSeparator;
