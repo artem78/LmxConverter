@@ -104,9 +104,17 @@ begin
   try
     try
       Converter.Convert(OutFileName);
-      SuccessMsg := Format('%d landmarks have been processed.',
-                 [Converter.ProcessedLandmarks]);
-      MessageDlg('Done!', SuccessMsg, mtInformation, [mbOK], 0);
+      if Converter.ProcessedLandmarks > 0 then
+      begin
+        SuccessMsg := Format('%d landmarks have been processed.',
+                   [Converter.ProcessedLandmarks]);
+        MessageDlg('Done!', SuccessMsg, mtInformation, [mbOK], 0);
+      end
+      else
+      begin
+        MessageDlg('No landmarks found!', mtWarning, [mbOK], 0);
+      end;
+
     except
       on E: Exception do
       begin
