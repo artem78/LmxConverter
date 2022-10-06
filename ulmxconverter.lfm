@@ -62,6 +62,7 @@ object MainForm: TMainForm
       'KML (Keyhole Markup Language)'
       'GPX (GPS eXchange Format)'
       'LMX (Nokia Landmark Exchange)'
+      'GeoJSON'
     )
     OnClick = OutputFormatRadioGroupClick
     TabOrder = 2

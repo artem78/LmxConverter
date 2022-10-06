@@ -13,7 +13,7 @@ Formats documentation/schemas:
 interface
 
 uses
-  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math, fgl;
+  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math, fgl, fpjson;
 
 type
   TLandmarkAddress = record
@@ -79,6 +79,18 @@ type
     destructor Destroy; override;
   end;
 
+  { JSON writer}
+
+  TJSONLandmarksWriter = class(TBaseLandmarksWriter)
+  private
+    procedure SaveData;
+  protected
+    JSON: TJSONObject;
+  public
+    constructor Create(AnOutFileName: String; const ACreator: String = '');
+    destructor Destroy; override;
+  end;
+
   { KML writer }
   TKMLWriter = class(TXMLLandmarksWriter)
   private
@@ -116,6 +128,19 @@ type
     class function FileExtension: String; {override;} static;
   public
     constructor Create(AFileName: String; const ACreator: String = '');
+
+    procedure WriteLandmark(Landmark: TLandmark); override;
+  end;
+
+  { GeoJSON writer }
+
+  TGeoJSONWriter = class(TJSONLandmarksWriter)
+  private
+    FeaturesArr: TJSONArray;
+
+    class function FileExtension: String; {override;} static;
+  public
+    constructor Create(AnInFileName: String; const ACreator: String = '');
 
     procedure WriteLandmark(Landmark: TLandmark); override;
   end;
@@ -173,6 +198,100 @@ uses StrUtils;
 
 const
   XMLDecimalSeparator: Char = '.';
+
+{ TJSONLandmarksWriter }
+
+procedure TJSONLandmarksWriter.SaveData;
+var
+  F: TextFile;
+begin
+  AssignFile(F, FileName);
+  try
+    Rewrite(F);
+    // ToDo: Write floats in normal form instead of scientific
+    WriteLn(F, JSON.FormatJSON([foSingleLineArray]));
+  finally
+    CloseFile(F);
+  end;
+end;
+
+constructor TJSONLandmarksWriter.Create(AnOutFileName: String;
+  const ACreator: String);
+begin
+  inherited;
+
+  JSON := TJSONObject.Create;
+end;
+
+destructor TJSONLandmarksWriter.Destroy;
+begin
+  SaveData;
+
+  JSON.Free;
+
+  inherited Destroy;
+end;
+
+{ TGeoJSONWriter }
+
+class function TGeoJSONWriter.FileExtension: String;
+begin
+  Result := 'geojson';
+end;
+
+constructor TGeoJSONWriter.Create(AnInFileName: String; const ACreator: String);
+begin
+  inherited;
+
+  JSON.Add('generator', ACreator);
+  JSON.Add('type', 'FeatureCollection');
+  FeaturesArr := TJSONArray.Create;
+  JSON.Add('features', FeaturesArr);
+end;
+
+procedure TGeoJSONWriter.WriteLandmark(Landmark: TLandmark);
+var
+  Feature: TJSONObject;
+  Coords: TJSONArray;
+  Props: TJSONObject;
+begin
+  Feature := TJSONObject.Create(['type', 'Feature']);
+  Props := TJSONObject.Create;
+
+  { Coordinates }
+
+  if (not IsNan(Landmark.Lat)) and (not IsNan(Landmark.Lon)) then
+  begin
+    Coords := TJSONArray.Create([Landmark.Lon, Landmark.Lat]);
+    if not IsNan(Landmark.Alt) then
+      Coords.Add(Landmark.Alt);
+
+    Feature.Add('geometry', TJSONObject.Create([
+      'type', 'Point',
+      'coordinates', Coords
+    ]));
+  end
+  else
+    Feature.Add('geometry', TJSONNull.Create);
+
+
+  { Name }
+
+  if not Landmark.Name.IsEmpty then
+    Props.Add('name', Landmark.Name);
+
+
+
+  if Props.Count > 0 then
+    Feature.Add('properties', Props)
+  else
+  begin
+    Feature.Add('properties', TJSONNull.Create);
+    Props.Free;
+  end;
+
+  FeaturesArr.Add(Feature);
+end;
 
 { TLandmarkAddress }
 
@@ -538,6 +657,8 @@ begin
     Reader := TGPXReader.Create(AInFileName)
   else if AInFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
     Reader := TLMXReader.Create(AInFileName)
+  else if AInFileName.EndsWith('.' + TGeoJSONWriter.FileExtension, True) then
+    Writer := TGeoJSONWriter.Create(AInFileName, Creator)
   else
     raise Exception.Create('Unsupported format!');
 
@@ -565,6 +686,8 @@ begin
     Writer := TGPXWriter.Create(AnOutFileName, Creator)
   else if AnOutFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
     Writer := TLMXWriter.Create(AnOutFileName, Creator)
+  else if AnOutFileName.EndsWith('.' + TGeoJSONWriter.FileExtension, True) then
+    Writer := TGeoJSONWriter.Create(AnOutFileName, Creator)
   else
     raise Exception.Create('Unsupported format!');
 

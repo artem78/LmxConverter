@@ -31,7 +31,7 @@ type
     { public declarations }
   end;
 
-  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
+  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX, ofmtGeoJSON);
 
 var
   MainForm: TMainForm;
@@ -83,6 +83,9 @@ begin
 
     ofmtLMX:
       OutFileExt := 'lmx';
+
+    ofmtGeoJSON:
+      OutFileExt := 'geojson';
 
     else
     begin
@@ -141,6 +144,8 @@ begin
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtGPX)
   else if OutFormat = 'lmx' then
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtLMX)
+  else if OutFormat = 'geojson' then
+     OutputFormatRadioGroup.ItemIndex := Ord(ofmtGeoJSON)
   else // KML is default
      OutputFormatRadioGroup.ItemIndex := Ord(ofmtKML);
 end;
@@ -154,6 +159,7 @@ begin
     ofmtKML: OutFormat := 'kml';
     ofmtGPX: OutFormat := 'gpx';
     ofmtLMX: OutFormat := 'lmx';
+    ofmtGeoJSON: OutFormat := 'geojson';
     else     raise Exception.Create('Unknown format');
   end;
   IniPropStorage.WriteString('format', OutFormat);
