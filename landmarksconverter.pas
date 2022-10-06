@@ -198,6 +198,28 @@ uses StrUtils;
 
 const
   XMLDecimalSeparator: Char = '.';
+  JSONDecimalSeparator: Char = '.';
+
+type
+
+  { TJSONFloat4Number }
+
+  TJSONFloat4Number = class(TJSONFloatNumber)
+  protected
+    function GetAsString: TJSONStringType; override;
+  end;
+
+{ TJSONFloat4Number }
+
+function TJSONFloat4Number.GetAsString: TJSONStringType;
+var
+  F: TJSONFloat;
+  Fmt: TFormatSettings;
+begin
+  F := GetAsFloat;
+  Fmt.DecimalSeparator := JSONDecimalSeparator;
+  Result := FloatToStr(F, Fmt);
+end;
 
 { TJSONLandmarksWriter }
 
@@ -208,7 +230,6 @@ begin
   AssignFile(F, FileName);
   try
     Rewrite(F);
-    // ToDo: Write floats in normal form instead of scientific
     WriteLn(F, JSON.FormatJSON([foSingleLineArray]));
   finally
     CloseFile(F);
@@ -219,6 +240,8 @@ constructor TJSONLandmarksWriter.Create(AnOutFileName: String;
   const ACreator: String);
 begin
   inherited;
+
+  SetJSONInstanceType(jitNumberFloat, TJSONFloat4Number);
 
   JSON := TJSONObject.Create;
 end;
