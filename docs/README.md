@@ -20,17 +20,17 @@ You can download latest build for MS Windows [here](https://github.com/artem78/L
 
 ## List of exported fields
 
-|                                  | LMX | GPX | KML |
-|----------------------------------|-----|-----|-----|
-| Name                             |  +  |  +  |  +  |
-| Description                      |  +  |  +  |  +  |
-| Coordinates (lat + lon)          |  +  |  +  |  +  |
-| Altitude                         |  +  |  +  |  +  |
-| Accuracy (horizontal + vertical) |  +  |     |     |
-| Address                          |  +  |     |  +  |
-| Phone number                     |  +  |     |  +  |
-| Link                             |     |     |     |
-| Category                         |  +  |     |  +  |
+|                                     | LMX | GPX | KML |
+|-------------------------------------|-----|-----|-----|
+| Name                                |  +  |  +  |  +  |
+| Description                         |  +  |  +  |  +  |
+| Coordinates (latitude and longitude)|  +  |  +  |  +  |
+| Altitude                            |  +  |  +  |  +  |
+| Accuracy (horizontal and vertical)  |  +  |     |     |
+| Address                             |  +  |     |  +  |
+| Phone number                        |  +  |     |  +  |
+| Link                                |     |     |     |
+| Category                            |  +  |     |  +  |
 
 ## Conversion examples
 
