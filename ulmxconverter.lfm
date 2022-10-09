@@ -31,7 +31,7 @@ object MainForm: TMainForm
     OnClick = ConvertButtonClick
     TabOrder = 3
   end
-  object InputFilePathEdit: TEdit
+  object InputFileNameEdit: TEdit
     Left = 8
     Height = 23
     Top = 8
@@ -76,7 +76,7 @@ object MainForm: TMainForm
     OnClick = AboutButtonClick
     TabOrder = 4
   end
-  object OpenDialog: TOpenDialog
+  object InputFileDialog: TOpenDialog
     Filter = 'Landmark files|*.lmx;*.kml;*.gpx'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
     Left = 248

@@ -10,6 +10,8 @@ uses
 
 type
 
+  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
+
   { TMainForm }
 
   TMainForm = class(TForm)
@@ -17,8 +19,8 @@ type
     ChooseInputFileButton: TButton;
     ConvertButton: TButton;
     IniPropStorage: TIniPropStorage;
-    InputFilePathEdit: TEdit;
-    OpenDialog: TOpenDialog;
+    InputFileNameEdit: TEdit;
+    InputFileDialog: TOpenDialog;
     OutputFormatRadioGroup: TRadioGroup;
     procedure AboutButtonClick(Sender: TObject);
     procedure ChooseInputFileButtonClick(Sender: TObject);
@@ -26,12 +28,14 @@ type
     procedure FormCreate(Sender: TObject);
     procedure OutputFormatRadioGroupClick(Sender: TObject);
   private
-    { private declarations }
+    function GetInputFileName: String;
+    procedure SetInputFileName(const AFileName: string);
+    function GetOutputFormat: TOutputFormat;
+    procedure SetOutputFormat(AFormat: TOutputFormat);
   public
-    { public declarations }
+    property InputFileName: String read GetInputFileName write SetInputFileName;
+    property OutputFormat: TOutputFormat read GetOutputFormat write SetOutputFormat;
   end;
-
-  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
 
 var
   MainForm: TMainForm;
@@ -47,8 +51,8 @@ uses
 
 procedure TMainForm.ChooseInputFileButtonClick(Sender: TObject);
 begin
-  if OpenDialog.Execute then;
-     InputFilePathEdit.Text := OpenDialog.FileName;
+  if InputFileDialog.Execute then;
+     InputFileName := InputFileDialog.FileName;
 end;
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
@@ -58,23 +62,22 @@ end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  InFileName, OutFileName, OutFileExt: String;
+  OutFileName, OutFileExt: String;
   Converter: TLandmarksConverter;
   FailMessage, SuccessMsg: String;
 begin
-  InFileName := InputFilePathEdit.Text;
-
   // Some checks before
-  if InFileName = '' then
+  if InputFileName.IsEmpty then
      Exit; // Nothing to do
 
-  if not FileExists(InFileName) then
+  if not FileExists(InputFileName) then
   begin
-    MessageDlg(Format('"%s" is not a valid input file!', [InFileName]), mtError, [mbOK], 0);
+    MessageDlg(Format('"%s" is not a valid input file!',
+                      [InputFileName]), mtError, [mbOK], 0);
     Exit;
   end;
 
-  case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
+  case OutputFormat of
     ofmtKML:
       OutFileExt := 'kml';
 
@@ -91,7 +94,7 @@ begin
     end;
   end;
 
-  OutFileName := ChangeFileExt(InFileName, '.' + OutFileExt);
+  OutFileName := ChangeFileExt(InputFileName, '.' + OutFileExt);
   if FileExists(OutFileName) then
   begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
@@ -102,7 +105,7 @@ begin
   end;
 
   // Create converter object
-  Converter := TLandmarksConverter.Create(InFileName);
+  Converter := TLandmarksConverter.Create(InputFileName);
   Converter.Creator := 'LMX Converter ' + ProgramVersionStr;
 
   try
@@ -132,31 +135,57 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  OutFormat: String;
+  function StrToFormat(AStr: String): TOutputFormat;
+  var
+    Code: Word;
+  begin
+    Val('ofmt' + AStr, Result, Code);
+    if Code <> 0 then
+      raise Exception.CreateFmt('Can''t convert string "%s" to TOutputFormat', [AStr]);
+  end;
+
 begin
   // Read settings from INI file
-  OutFormat := IniPropStorage.ReadString('format', 'kml');
-  if OutFormat = 'gpx' then
-     OutputFormatRadioGroup.ItemIndex := Ord(ofmtGPX)
-  else if OutFormat = 'lmx' then
-     OutputFormatRadioGroup.ItemIndex := Ord(ofmtLMX)
-  else // KML is default
-     OutputFormatRadioGroup.ItemIndex := Ord(ofmtKML);
+  try
+    OutputFormat := StrToFormat(IniPropStorage.ReadString('format', 'kml'));
+  except // KML is default
+    OutputFormat := ofmtKML;
+  end;
 end;
 
 procedure TMainForm.OutputFormatRadioGroupClick(Sender: TObject);
-var
-  OutFormat: String;
 begin
-  // Save settings for output format
-  case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
-    ofmtKML: OutFormat := 'kml';
-    ofmtGPX: OutFormat := 'gpx';
-    ofmtLMX: OutFormat := 'lmx';
-    else     raise Exception.Create('Unknown format');
+  OutputFormat := OutputFormat; // Just for trigger save
+end;
+
+function TMainForm.GetInputFileName: String;
+begin
+  Result := InputFileNameEdit.Text;
+end;
+
+procedure TMainForm.SetInputFileName(const AFileName: string);
+begin
+  InputFileNameEdit.Text := AFileName;
+end;
+
+function TMainForm.GetOutputFormat: TOutputFormat;
+begin
+  Result := TOutputFormat(OutputFormatRadioGroup.ItemIndex);
+end;
+
+procedure TMainForm.SetOutputFormat(AFormat: TOutputFormat);
+  function FormatToStr(AFormat: TOutputFormat): String;
+  begin
+    Str(AFormat, Result);
+    Result := LowerCase(Result);
+    Result := StringReplace(Result, 'ofmt', '', []);
   end;
-  IniPropStorage.WriteString('format', OutFormat);
+
+begin
+  OutputFormatRadioGroup.ItemIndex := Ord(AFormat);
+
+  // Save output format setting
+  IniPropStorage.WriteString('format', FormatToStr(AFormat));
 end;
 
 end.
