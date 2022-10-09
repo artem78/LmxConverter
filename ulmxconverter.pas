@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, IniPropStorage{, LCLProc}, about;
+  StdCtrls, ExtCtrls, IniPropStorage, EditBtn{, LCLProc}, about;
 
 type
 
@@ -16,20 +16,16 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TButton;
+    OutputDirEdit: TDirectoryEdit;
+    OutputDirLabel: TLabel;
+    OutputFormatLabel: TLabel;
+    OutputFormatComboBox: TComboBox;
+    InputFileNameEdit: TFileNameEdit;
+    InputFileNameLabel: TLabel;
     OpenOutputDirButton: TButton;
-    ChooseOutputDirButton: TButton;
-    SelectOutputDirDialog: TSelectDirectoryDialog;
-    ChooseInputFileButton: TButton;
     ConvertButton: TButton;
-    OutputDirEdit: TEdit;
-    OutputDirGroupBox: TGroupBox;
     IniPropStorage: TIniPropStorage;
-    InputFileNameEdit: TEdit;
-    InputFileDialog: TOpenDialog;
-    OutputFormatRadioGroup: TRadioGroup;
     procedure AboutButtonClick(Sender: TObject);
-    procedure ChooseInputFileButtonClick(Sender: TObject);
-    procedure ChooseOutputDirButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure OpenOutputDirButtonClick(Sender: TObject);
@@ -58,18 +54,6 @@ uses
 {$R *.lfm}
 
 { TMainForm }
-
-procedure TMainForm.ChooseInputFileButtonClick(Sender: TObject);
-begin
-  if InputFileDialog.Execute then;
-     InputFileName := InputFileDialog.FileName;
-end;
-
-procedure TMainForm.ChooseOutputDirButtonClick(Sender: TObject);
-begin
-  if SelectOutputDirDialog.Execute then
-    OutputDir := SelectOutputDirDialog.FileName;
-end;
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
 begin
@@ -195,7 +179,7 @@ end;
 
 function TMainForm.GetOutputFormat: TOutputFormat;
 begin
-  Result := TOutputFormat(OutputFormatRadioGroup.ItemIndex);
+  Result := TOutputFormat(OutputFormatComboBox.ItemIndex);
 end;
 
 procedure TMainForm.SetOutputFormat(AFormat: TOutputFormat);
@@ -207,7 +191,7 @@ procedure TMainForm.SetOutputFormat(AFormat: TOutputFormat);
   end;
 
 begin
-  OutputFormatRadioGroup.ItemIndex := Ord(AFormat);
+  OutputFormatComboBox.ItemIndex := Ord(AFormat);
 
   // Save output format setting
   IniPropStorage.WriteString('format', FormatToStr(AFormat));
