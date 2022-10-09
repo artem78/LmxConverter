@@ -16,25 +16,35 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TButton;
+    OpenOutputDirButton: TButton;
+    ChooseOutputDirButton: TButton;
+    SelectOutputDirDialog: TSelectDirectoryDialog;
     ChooseInputFileButton: TButton;
     ConvertButton: TButton;
+    OutputDirEdit: TEdit;
+    OutputDirGroupBox: TGroupBox;
     IniPropStorage: TIniPropStorage;
     InputFileNameEdit: TEdit;
     InputFileDialog: TOpenDialog;
     OutputFormatRadioGroup: TRadioGroup;
     procedure AboutButtonClick(Sender: TObject);
     procedure ChooseInputFileButtonClick(Sender: TObject);
+    procedure ChooseOutputDirButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure OpenOutputDirButtonClick(Sender: TObject);
     procedure OutputFormatRadioGroupClick(Sender: TObject);
   private
     function GetInputFileName: String;
     procedure SetInputFileName(const AFileName: string);
     function GetOutputFormat: TOutputFormat;
     procedure SetOutputFormat(AFormat: TOutputFormat);
+    function GetOutputDir: String;
+    procedure SetOutputDir(const ADir: String);
   public
     property InputFileName: String read GetInputFileName write SetInputFileName;
     property OutputFormat: TOutputFormat read GetOutputFormat write SetOutputFormat;
+    property OutputDir: String read GetOutputDir write SetOutputDir;
   end;
 
 var
@@ -43,7 +53,7 @@ var
 implementation
 
 uses
-  LandmarksConverter, Utils;
+  LandmarksConverter, Utils, LCLIntf, LazFileUtils;
 
 {$R *.lfm}
 
@@ -53,6 +63,12 @@ procedure TMainForm.ChooseInputFileButtonClick(Sender: TObject);
 begin
   if InputFileDialog.Execute then;
      InputFileName := InputFileDialog.FileName;
+end;
+
+procedure TMainForm.ChooseOutputDirButtonClick(Sender: TObject);
+begin
+  if SelectOutputDirDialog.Execute then
+    OutputDir := SelectOutputDirDialog.FileName;
 end;
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
@@ -94,7 +110,9 @@ begin
     end;
   end;
 
-  OutFileName := ChangeFileExt(InputFileName, '.' + OutFileExt);
+  OutFileName := ConcatPaths([OutputDir,
+                 ExtractFileNameWithoutExt(ExtractFileNameOnly(InputFileName))
+                 + '.' + OutFileExt]);
   if FileExists(OutFileName) then
   begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
@@ -151,6 +169,13 @@ begin
   except // KML is default
     OutputFormat := ofmtKML;
   end;
+  OutputDir := IniPropStorage.ReadString('dir', '');
+end;
+
+procedure TMainForm.OpenOutputDirButtonClick(Sender: TObject);
+begin
+  if not OutputDir.IsEmpty then
+    OpenDocument(OutputDir);
 end;
 
 procedure TMainForm.OutputFormatRadioGroupClick(Sender: TObject);
@@ -186,6 +211,19 @@ begin
 
   // Save output format setting
   IniPropStorage.WriteString('format', FormatToStr(AFormat));
+end;
+
+function TMainForm.GetOutputDir: String;
+begin
+  Result := OutputDirEdit.Text;
+end;
+
+procedure TMainForm.SetOutputDir(const ADir: String);
+begin
+  OutputDirEdit.Text := ADir;
+
+  // Save output directory setting
+  IniPropStorage.WriteString('dir', ADir);
 end;
 
 end.

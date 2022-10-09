@@ -1,12 +1,12 @@
 object MainForm: TMainForm
   Left = 357
-  Height = 139
+  Height = 206
   Top = 277
   Width = 579
   ActiveControl = ChooseInputFileButton
   BorderStyle = bsDialog
   Caption = 'LMX Converter'
-  ClientHeight = 139
+  ClientHeight = 206
   ClientWidth = 579
   OnCreate = FormCreate
   Position = poScreenCenter
@@ -26,7 +26,7 @@ object MainForm: TMainForm
     Height = 25
     Top = 56
     Width = 164
-    Anchors = [akRight, akBottom]
+    Anchors = [akTop, akLeft, akRight]
     Caption = 'Convert'
     OnClick = ConvertButtonClick
     TabOrder = 3
@@ -45,7 +45,7 @@ object MainForm: TMainForm
     Height = 76
     Top = 48
     Width = 387
-    Anchors = [akTop, akLeft, akRight, akBottom]
+    Anchors = [akTop, akLeft, akRight]
     AutoFill = True
     Caption = 'Output format:'
     ChildSizing.LeftRightSpacing = 6
@@ -76,6 +76,42 @@ object MainForm: TMainForm
     OnClick = AboutButtonClick
     TabOrder = 4
   end
+  object OutputDirGroupBox: TGroupBox
+    Left = 8
+    Height = 65
+    Top = 136
+    Width = 564
+    Caption = 'Output directory'
+    ClientHeight = 45
+    ClientWidth = 560
+    TabOrder = 5
+    object OutputDirEdit: TEdit
+      Left = 8
+      Height = 23
+      Top = 8
+      Width = 336
+      ReadOnly = True
+      TabOrder = 0
+    end
+    object ChooseOutputDirButton: TButton
+      Left = 360
+      Height = 25
+      Top = 8
+      Width = 96
+      Caption = 'Choose...'
+      OnClick = ChooseOutputDirButtonClick
+      TabOrder = 1
+    end
+    object OpenOutputDirButton: TButton
+      Left = 472
+      Height = 25
+      Top = 8
+      Width = 75
+      Caption = 'Open'
+      OnClick = OpenOutputDirButtonClick
+      TabOrder = 2
+    end
+  end
   object InputFileDialog: TOpenDialog
     Filter = 'Landmark files|*.lmx;*.kml;*.gpx'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
@@ -88,5 +124,9 @@ object MainForm: TMainForm
     IniSection = 'settings'
     Left = 320
     Top = 32
+  end
+  object SelectOutputDirDialog: TSelectDirectoryDialog
+    Left = 248
+    Top = 96
   end
 end
