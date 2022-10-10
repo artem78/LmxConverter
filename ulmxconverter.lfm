@@ -45,9 +45,12 @@ object MainForm: TMainForm
     FilterIndex = 0
     HideDirectories = False
     ButtonWidth = 23
+    DirectInput = False
     NumGlyphs = 1
+    FocusOnButtonClick = True
     MaxLength = 0
     TabOrder = 0
+    OnButtonClick = InputFileNameEditButtonClick
     OnChange = InputFileNameEditChange
   end
   object OutputFormatLabel: TLabel
@@ -101,7 +104,9 @@ object MainForm: TMainForm
     DialogTitle = 'Choose output directory'
     ShowHidden = False
     ButtonWidth = 23
+    DirectInput = False
     NumGlyphs = 1
+    FocusOnButtonClick = True
     MaxLength = 0
     TabOrder = 2
     OnChange = OutputDirEditChange

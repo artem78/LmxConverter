@@ -29,6 +29,7 @@ type
     procedure AboutButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure InputFileNameEditButtonClick(Sender: TObject);
     procedure InputFileNameEditChange(Sender: TObject);
     procedure OpenOutputDirButtonClick(Sender: TObject);
     procedure OutputDirEditChange(Sender: TObject);
@@ -167,6 +168,11 @@ begin
     OutputDir := IniPropStorage.ReadString('dir', '')
   else
     OutputDir := '';
+end;
+
+procedure TMainForm.InputFileNameEditButtonClick(Sender: TObject);
+begin
+  InputFileNameEdit.InitialDir := ExtractFileDir(InputFileName);
 end;
 
 procedure TMainForm.InputFileNameEditChange(Sender: TObject);
