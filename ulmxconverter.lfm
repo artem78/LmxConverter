@@ -78,7 +78,7 @@ object MainForm: TMainForm
     TabOrder = 4
   end
   object OpenDialog: TOpenDialog
-    Filter = 'Landmark files|*.lmx;*.kml;*.gpx'
+    Filter = 'Landmark files|*.lmx;*.kml;*.gpx;*.geojson'
     Options = [ofReadOnly, ofEnableSizing, ofViewDetail]
     Left = 248
     Top = 32

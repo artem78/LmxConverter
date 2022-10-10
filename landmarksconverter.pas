@@ -172,6 +172,16 @@ type
     destructor Destroy; override;
   end;
 
+  { TJSONLandmarksReader }
+
+  TJSONLandmarksReader = class(TBaseLandmarksReader)
+  protected
+    JSON: TJSONData;
+  public
+    constructor Create(const AFileName: String); override;
+    destructor Destroy; override;
+  end;
+
   { KML reader }
 
   TKMLReader = class(TXMLLandmarksReader)
@@ -193,6 +203,13 @@ type
     function ReadLandmarks: TLandmarks; override;
   end;
 
+  { TGeoJSONReader }
+
+  TGeoJSONReader = class(TJSONLandmarksReader)
+  public
+    function ReadLandmarks: TLandmarks; override;
+  end;
+
 implementation
 
 uses StrUtils;
@@ -209,6 +226,78 @@ type
   protected
     function GetAsString: TJSONStringType; override;
   end;
+
+{ TGeoJSONReader }
+
+function TGeoJSONReader.ReadLandmarks: TLandmarks;
+var
+  FeatureArr: TJSONArray;
+  FeatureObj: TJSONObject;
+  Idx: Integer;
+  Landmark: TLandmark;
+begin
+  FeatureArr := TJSONObject(JSON).Arrays['features'];
+  Result := TLandmarks.Create();
+  Result.Capacity := FeatureArr.Count;
+  for Idx := 0 to FeatureArr.Count - 1 do
+  begin
+    FeatureObj := FeatureArr.Objects[Idx];
+    Landmark := TLandmark.Create;
+
+    { Coordinates }
+
+    try
+      Landmark.Lon := FeatureObj.FindPath('geometry.coordinates[0]').AsFloat;
+    except
+    end;
+
+    try
+      Landmark.Lat := FeatureObj.FindPath('geometry.coordinates[1]').AsFloat;
+    except
+    end;
+
+    try
+      Landmark.Alt := FeatureObj.FindPath('geometry.coordinates[2]').AsFloat;
+    except
+    end;
+
+
+    { Name }
+
+    try
+      Landmark.Name := FeatureObj.FindPath('properties.name').AsString;
+    except
+    end;
+
+
+    Result.Add(Landmark);
+  end;
+  FeatureArr.Free;
+end;
+
+{ TJSONLandmarksReader }
+
+constructor TJSONLandmarksReader.Create(const AFileName: String);
+var
+  FileStream: TFileStream;
+begin
+  inherited Create(AFileName);
+
+  FileStream := TFileStream.Create(AFileName, fmOpenRead);
+  try
+    FileStream.Position := 0;
+    JSON := GetJSON(FileStream);
+  finally
+    FileStream.Free;
+  end;
+end;
+
+destructor TJSONLandmarksReader.Destroy;
+begin
+  JSON.Free;
+
+  inherited Destroy;
+end;
 
 { TJSONFloat4Number }
 
@@ -682,7 +771,7 @@ begin
   else if AInFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
     Reader := TLMXReader.Create(AInFileName)
   else if AInFileName.EndsWith('.' + TGeoJSONWriter.FileExtension, True) then
-    Writer := TGeoJSONWriter.Create(AInFileName, Creator)
+    Reader := TGeoJSONReader.Create(AInFileName)
   else
     raise Exception.Create('Unsupported format!');
 
