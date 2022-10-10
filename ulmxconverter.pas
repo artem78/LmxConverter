@@ -77,13 +77,20 @@ var
   FailMessage, SuccessMsg: String;
 begin
   // Some checks before
-  if InputFileName.IsEmpty then
+  if InputFileName.IsEmpty or OutputDir.IsEmpty then
      Exit; // Nothing to do
 
   if not FileExists(InputFileName) then
   begin
     MessageDlg(Format('"%s" is not a valid input file!',
                       [InputFileName]), mtError, [mbOK], 0);
+    Exit;
+  end;
+
+  if not DirectoryIsWritable(OutputDir) then
+  begin
+    MessageDlg(Format('"%s" is not a valid directory!',
+                      [OutputDir]), mtError, [mbOK], 0);
     Exit;
   end;
 
