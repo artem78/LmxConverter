@@ -16,6 +16,7 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TButton;
+    SameDirUsedCheckBox: TCheckBox;
     OutputDirEdit: TDirectoryEdit;
     OutputDirLabel: TLabel;
     OutputFormatLabel: TLabel;
@@ -28,8 +29,11 @@ type
     procedure AboutButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure InputFileNameEditChange(Sender: TObject);
     procedure OpenOutputDirButtonClick(Sender: TObject);
+    procedure OutputDirEditChange(Sender: TObject);
     procedure OutputFormatRadioGroupClick(Sender: TObject);
+    procedure SameDirUsedCheckBoxChange(Sender: TObject);
   private
     function GetInputFileName: String;
     procedure SetInputFileName(const AFileName: string);
@@ -37,10 +41,15 @@ type
     procedure SetOutputFormat(AFormat: TOutputFormat);
     function GetOutputDir: String;
     procedure SetOutputDir(const ADir: String);
+    function GetSameDirUsed: Boolean;
+    procedure SetSameDirUsed(AVal: Boolean);
+
+    procedure UseOutputDirFromInputFileName;
   public
     property InputFileName: String read GetInputFileName write SetInputFileName;
     property OutputFormat: TOutputFormat read GetOutputFormat write SetOutputFormat;
     property OutputDir: String read GetOutputDir write SetOutputDir;
+    property SameDirUsed: Boolean read GetSameDirUsed write SetSameDirUsed;
   end;
 
 var
@@ -153,7 +162,16 @@ begin
   except // KML is default
     OutputFormat := ofmtKML;
   end;
-  OutputDir := IniPropStorage.ReadString('dir', '');
+  SameDirUsed := IniPropStorage.ReadBoolean('dirIgnored', True);
+  if not SameDirUsed then
+    OutputDir := IniPropStorage.ReadString('dir', '')
+  else
+    OutputDir := '';
+end;
+
+procedure TMainForm.InputFileNameEditChange(Sender: TObject);
+begin
+  UseOutputDirFromInputFileName;
 end;
 
 procedure TMainForm.OpenOutputDirButtonClick(Sender: TObject);
@@ -162,9 +180,19 @@ begin
     OpenDocument(OutputDir);
 end;
 
+procedure TMainForm.OutputDirEditChange(Sender: TObject);
+begin
+  OutputDir := OutputDir; // Just for trigger save
+end;
+
 procedure TMainForm.OutputFormatRadioGroupClick(Sender: TObject);
 begin
   OutputFormat := OutputFormat; // Just for trigger save
+end;
+
+procedure TMainForm.SameDirUsedCheckBoxChange(Sender: TObject);
+begin
+  SameDirUsed := SameDirUsed; // Just for trigger save
 end;
 
 function TMainForm.GetInputFileName: String;
@@ -208,6 +236,27 @@ begin
 
   // Save output directory setting
   IniPropStorage.WriteString('dir', ADir);
+end;
+
+function TMainForm.GetSameDirUsed: Boolean;
+begin
+  Result := SameDirUsedCheckBox.Checked;
+end;
+
+procedure TMainForm.SetSameDirUsed(AVal: Boolean);
+begin
+  SameDirUsedCheckBox.Checked := AVal;
+
+  IniPropStorage.WriteBoolean('dirIgnored', AVal);
+
+  OutputDirEdit.Enabled := not AVal;
+  UseOutputDirFromInputFileName;
+end;
+
+procedure TMainForm.UseOutputDirFromInputFileName;
+begin
+  if SameDirUsed then
+    OutputDir := ExtractFileDir(InputFileName);
 end;
 
 end.

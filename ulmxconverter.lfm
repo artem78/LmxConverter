@@ -1,11 +1,11 @@
 object MainForm: TMainForm
   Left = 357
-  Height = 165
+  Height = 195
   Top = 277
   Width = 686
   BorderStyle = bsDialog
   Caption = 'LMX Converter'
-  ClientHeight = 165
+  ClientHeight = 195
   ClientWidth = 686
   OnCreate = FormCreate
   Position = poScreenCenter
@@ -17,12 +17,12 @@ object MainForm: TMainForm
     AnchorSideRight.Side = asrCenter
     Left = 290
     Height = 25
-    Top = 128
+    Top = 152
     Width = 105
     Anchors = [akTop, akRight]
     Caption = 'Convert'
     OnClick = ConvertButtonClick
-    TabOrder = 4
+    TabOrder = 5
   end
   object InputFileNameLabel: TLabel
     AnchorSideTop.Control = InputFileNameEdit
@@ -48,6 +48,7 @@ object MainForm: TMainForm
     NumGlyphs = 1
     MaxLength = 0
     TabOrder = 0
+    OnChange = InputFileNameEditChange
   end
   object OutputFormatLabel: TLabel
     AnchorSideTop.Control = OutputFormatComboBox
@@ -76,11 +77,11 @@ object MainForm: TMainForm
   object AboutButton: TButton
     Left = 568
     Height = 25
-    Top = 128
+    Top = 152
     Width = 108
     Caption = 'About...'
     OnClick = AboutButtonClick
-    TabOrder = 5
+    TabOrder = 6
   end
   object OutputDirLabel: TLabel
     AnchorSideTop.Control = OutputDirEdit
@@ -103,6 +104,7 @@ object MainForm: TMainForm
     NumGlyphs = 1
     MaxLength = 0
     TabOrder = 2
+    OnChange = OutputDirEditChange
   end
   object OpenOutputDirButton: TButton
     AnchorSideTop.Control = OutputDirEdit
@@ -114,6 +116,15 @@ object MainForm: TMainForm
     Caption = 'Open folder'
     OnClick = OpenOutputDirButtonClick
     TabOrder = 3
+  end
+  object SameDirUsedCheckBox: TCheckBox
+    Left = 128
+    Height = 19
+    Top = 112
+    Width = 140
+    Caption = 'Use the same directory'
+    OnChange = SameDirUsedCheckBoxChange
+    TabOrder = 4
   end
   object IniPropStorage: TIniPropStorage
     StoredValues = <>
