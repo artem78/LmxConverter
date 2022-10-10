@@ -72,7 +72,7 @@ end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  OutFileName, OutFileExt: String;
+  OutFileName, OutFileExt, NewOutFileNameOnly: String;
   Converter: TLandmarksConverter;
   FailMessage, SuccessMsg: String;
 begin
@@ -119,7 +119,11 @@ begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
          mtConfirmation, mbYesNo, 0) <> mrYes then
     begin
-      Exit;
+      NewOutFileNameOnly := CreateUniqueFileName(ExtractFileName(OutFileName), OutputDir);
+      if InputQuery('New file name', '', NewOutFileNameOnly) then
+        OutFileName := ConcatPaths([OutputDir, NewOutFileNameOnly])
+      else
+        Exit;
     end;
   end;
 
