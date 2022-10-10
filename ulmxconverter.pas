@@ -168,15 +168,20 @@ begin
     OutputDir := IniPropStorage.ReadString('dir', '')
   else
     OutputDir := '';
+  //InputFileName := IniPropStorage.ReadString('lastInputFile', '');
+  InputFileNameEdit.InitialDir := ExtractFileDir(IniPropStorage.ReadString('lastInputFile', ''));
 end;
 
 procedure TMainForm.InputFileNameEditButtonClick(Sender: TObject);
 begin
-  InputFileNameEdit.InitialDir := ExtractFileDir(InputFileName);
+  if not InputFileName.IsEmpty then
+    InputFileNameEdit.InitialDir := ExtractFileDir(InputFileName);
 end;
 
 procedure TMainForm.InputFileNameEditChange(Sender: TObject);
 begin
+  InputFileName := InputFileName;
+
   UseOutputDirFromInputFileName;
 end;
 
@@ -209,6 +214,8 @@ end;
 procedure TMainForm.SetInputFileName(const AFileName: string);
 begin
   InputFileNameEdit.Text := AFileName;
+
+  IniPropStorage.WriteString('lastInputFile', AFileName);
 end;
 
 function TMainForm.GetOutputFormat: TOutputFormat;
