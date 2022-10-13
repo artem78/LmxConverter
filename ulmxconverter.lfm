@@ -75,6 +75,7 @@ object MainForm: TMainForm
       'LMX (Nokia Landmark Exchange)'
       'GeoJSON'
     )
+    OnChange = OutputFormatComboBoxChange
     Style = csDropDownList
     TabOrder = 1
   end

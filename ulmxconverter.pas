@@ -33,7 +33,7 @@ type
     procedure InputFileNameEditChange(Sender: TObject);
     procedure OpenOutputDirButtonClick(Sender: TObject);
     procedure OutputDirEditChange(Sender: TObject);
-    procedure OutputFormatRadioGroupClick(Sender: TObject);
+    procedure OutputFormatComboBoxChange(Sender: TObject);
     procedure SameDirUsedCheckBoxChange(Sender: TObject);
   private
     function GetInputFileName: String;
@@ -210,7 +210,7 @@ begin
   OutputDir := OutputDir; // Just for trigger save
 end;
 
-procedure TMainForm.OutputFormatRadioGroupClick(Sender: TObject);
+procedure TMainForm.OutputFormatComboBoxChange(Sender: TObject);
 begin
   OutputFormat := OutputFormat; // Just for trigger save
 end;
