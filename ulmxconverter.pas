@@ -10,7 +10,7 @@ uses
 
 type
 
-  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
+  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX, ofmtGeoJSON);
 
   { TMainForm }
 
@@ -103,6 +103,9 @@ begin
 
     ofmtLMX:
       OutFileExt := 'lmx';
+
+    ofmtGeoJSON:
+      OutFileExt := 'geojson';
 
     else
     begin

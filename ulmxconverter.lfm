@@ -41,7 +41,7 @@ object MainForm: TMainForm
     Width = 544
     DialogTitle = 'Choose landmark file'
     DialogOptions = [ofReadOnly, ofEnableSizing, ofViewDetail]
-    Filter = 'Landmark files|*.lmx;*.kml;*.gpx'
+    Filter = 'Landmark files|*.lmx;*.kml;*.gpx;*.geojson'
     FilterIndex = 0
     HideDirectories = False
     ButtonWidth = 23
@@ -73,6 +73,7 @@ object MainForm: TMainForm
       'KML (Keyhole Markup Language)'
       'GPX (GPS eXchange Format)'
       'LMX (Nokia Landmark Exchange)'
+      'GeoJSON'
     )
     Style = csDropDownList
     TabOrder = 1

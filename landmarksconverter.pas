@@ -5,6 +5,7 @@ Formats documentation/schemas:
   LMX 1.0 - https://web.archive.org/web/20080611213659if_/http://www.forum.nokia.com/main/resources/technologies/location_based_services/lmx.xsd
   KML 2.2 - https://developers.google.com/kml/documentation/kmlreference
   GPX 1.1 - https://www.topografix.com/gpx/1/1/
+  GeoJSON - https://www.rfc-editor.org/rfc/rfc7946
 }
 
 {$mode objfpc}{$H+}
@@ -13,7 +14,7 @@ Formats documentation/schemas:
 interface
 
 uses
-  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math, fgl;
+  Classes, SysUtils, Laz2_DOM, laz2_XMLRead, laz2_XMLWrite, math, fgl, fpjson;
 
 type
   TLandmarkAddress = record
@@ -79,6 +80,18 @@ type
     destructor Destroy; override;
   end;
 
+  { JSON writer}
+
+  TJSONLandmarksWriter = class(TBaseLandmarksWriter)
+  private
+    procedure SaveData;
+  protected
+    JSON: TJSONObject;
+  public
+    constructor Create(AnOutFileName: String; const ACreator: String = '');
+    destructor Destroy; override;
+  end;
+
   { KML writer }
   TKMLWriter = class(TXMLLandmarksWriter)
   private
@@ -120,6 +133,19 @@ type
     procedure WriteLandmark(Landmark: TLandmark); override;
   end;
 
+  { GeoJSON writer }
+
+  TGeoJSONWriter = class(TJSONLandmarksWriter)
+  private
+    FeaturesArr: TJSONArray;
+
+    class function FileExtension: String; {override;} static;
+  public
+    constructor Create(AnInFileName: String; const ACreator: String = '');
+
+    procedure WriteLandmark(Landmark: TLandmark); override;
+  end;
+
 
   { Base class for any reader }
 
@@ -146,6 +172,16 @@ type
     destructor Destroy; override;
   end;
 
+  { TJSONLandmarksReader }
+
+  TJSONLandmarksReader = class(TBaseLandmarksReader)
+  protected
+    JSON: TJSONData;
+  public
+    constructor Create(const AFileName: String); override;
+    destructor Destroy; override;
+  end;
+
   { KML reader }
 
   TKMLReader = class(TXMLLandmarksReader)
@@ -167,12 +203,219 @@ type
     function ReadLandmarks: TLandmarks; override;
   end;
 
+  { TGeoJSONReader }
+
+  TGeoJSONReader = class(TJSONLandmarksReader)
+  public
+    function ReadLandmarks: TLandmarks; override;
+  end;
+
 implementation
 
 uses StrUtils;
 
 const
   XMLDecimalSeparator: Char = '.';
+  JSONDecimalSeparator: Char = '.';
+
+type
+
+  { TJSONFloat4Number }
+
+  TJSONFloat4Number = class(TJSONFloatNumber)
+  protected
+    function GetAsString: TJSONStringType; override;
+  end;
+
+{ TGeoJSONReader }
+
+function TGeoJSONReader.ReadLandmarks: TLandmarks;
+var
+  FeatureArr: TJSONArray;
+  FeatureObj, Geometry: TJSONObject;
+  Idx: Integer;
+  Landmark: TLandmark;
+begin
+  Result := TLandmarks.Create();
+
+  if TJSONObject(JSON).Get('type', '') <> 'FeatureCollection' then
+    Exit;
+
+  FeatureArr := TJSONObject(JSON).Arrays['features'];
+  Result.Capacity := FeatureArr.Count;
+  for Idx := 0 to FeatureArr.Count - 1 do
+  begin
+    FeatureObj := FeatureArr.Objects[Idx];
+
+    if FeatureObj.Get('type', '') <> 'Feature' then
+      Continue;
+
+    Landmark := TLandmark.Create;
+
+    { Coordinates }
+
+    Geometry := TJSONObject(FeatureObj.Find('geometry'));
+    if Assigned(Geometry) and (Geometry.Get('type', '') = 'Point') then
+    begin
+      try
+        Landmark.Lon := Geometry.FindPath('coordinates[0]').AsFloat;
+      except
+      end;
+
+      try
+        Landmark.Lat := Geometry.FindPath('coordinates[1]').AsFloat;
+      except
+      end;
+
+      try
+        Landmark.Alt := Geometry.FindPath('coordinates[2]').AsFloat;
+      except
+      end;
+    end;
+
+
+    { Name }
+
+    try
+      Landmark.Name := FeatureObj.FindPath('properties.name').AsString;
+    except
+    end;
+
+
+    Result.Add(Landmark);
+  end;
+end;
+
+{ TJSONLandmarksReader }
+
+constructor TJSONLandmarksReader.Create(const AFileName: String);
+var
+  FileStream: TFileStream;
+begin
+  inherited Create(AFileName);
+
+  FileStream := TFileStream.Create(AFileName, fmOpenRead);
+  try
+    FileStream.Position := 0;
+    JSON := GetJSON(FileStream);
+  finally
+    FileStream.Free;
+  end;
+end;
+
+destructor TJSONLandmarksReader.Destroy;
+begin
+  JSON.Free;
+
+  inherited Destroy;
+end;
+
+{ TJSONFloat4Number }
+
+function TJSONFloat4Number.GetAsString: TJSONStringType;
+var
+  F: TJSONFloat;
+  Fmt: TFormatSettings;
+begin
+  F := GetAsFloat;
+  Fmt.DecimalSeparator := JSONDecimalSeparator;
+  Result := FloatToStr(F, Fmt);
+end;
+
+{ TJSONLandmarksWriter }
+
+procedure TJSONLandmarksWriter.SaveData;
+var
+  F: TextFile;
+begin
+  AssignFile(F, FileName);
+  try
+    Rewrite(F);
+    WriteLn(F, JSON.FormatJSON([foSingleLineArray]));
+  finally
+    CloseFile(F);
+  end;
+end;
+
+constructor TJSONLandmarksWriter.Create(AnOutFileName: String;
+  const ACreator: String);
+begin
+  inherited;
+
+  SetJSONInstanceType(jitNumberFloat, TJSONFloat4Number);
+
+  JSON := TJSONObject.Create;
+end;
+
+destructor TJSONLandmarksWriter.Destroy;
+begin
+  SaveData;
+
+  JSON.Free;
+
+  inherited Destroy;
+end;
+
+{ TGeoJSONWriter }
+
+class function TGeoJSONWriter.FileExtension: String;
+begin
+  Result := 'geojson';
+end;
+
+constructor TGeoJSONWriter.Create(AnInFileName: String; const ACreator: String);
+begin
+  inherited;
+
+  JSON.Add('generator', ACreator);
+  JSON.Add('type', 'FeatureCollection');
+  FeaturesArr := TJSONArray.Create;
+  JSON.Add('features', FeaturesArr);
+end;
+
+procedure TGeoJSONWriter.WriteLandmark(Landmark: TLandmark);
+var
+  Feature: TJSONObject;
+  Coords: TJSONArray;
+  Props: TJSONObject;
+begin
+  Feature := TJSONObject.Create(['type', 'Feature']);
+  Props := TJSONObject.Create;
+
+  { Coordinates }
+
+  if (not IsNan(Landmark.Lat)) and (not IsNan(Landmark.Lon)) then
+  begin
+    Coords := TJSONArray.Create([Landmark.Lon, Landmark.Lat]);
+    if not IsNan(Landmark.Alt) then
+      Coords.Add(Landmark.Alt);
+
+    Feature.Add('geometry', TJSONObject.Create([
+      'type', 'Point',
+      'coordinates', Coords
+    ]));
+  end
+  else
+    Feature.Add('geometry', TJSONNull.Create);
+
+
+  { Name }
+
+  if not Landmark.Name.IsEmpty then
+    Props.Add('name', Landmark.Name);
+
+
+
+  if Props.Count > 0 then
+    Feature.Add('properties', Props)
+  else
+  begin
+    Feature.Add('properties', TJSONNull.Create);
+    Props.Free;
+  end;
+
+  FeaturesArr.Add(Feature);
+end;
 
 { TLandmarkAddress }
 
@@ -538,6 +781,8 @@ begin
     Reader := TGPXReader.Create(AInFileName)
   else if AInFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
     Reader := TLMXReader.Create(AInFileName)
+  else if AInFileName.EndsWith('.' + TGeoJSONWriter.FileExtension, True) then
+    Reader := TGeoJSONReader.Create(AInFileName)
   else
     raise Exception.Create('Unsupported format!');
 
@@ -565,6 +810,8 @@ begin
     Writer := TGPXWriter.Create(AnOutFileName, Creator)
   else if AnOutFileName.EndsWith('.' + TLMXWriter.FileExtension, True) then
     Writer := TLMXWriter.Create(AnOutFileName, Creator)
+  else if AnOutFileName.EndsWith('.' + TGeoJSONWriter.FileExtension, True) then
+    Writer := TGeoJSONWriter.Create(AnOutFileName, Creator)
   else
     raise Exception.Create('Unsupported format!');
 
