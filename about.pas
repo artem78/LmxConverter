@@ -31,7 +31,12 @@ var
 
 implementation
 
-uses Utils, Windows;
+uses
+  Utils
+  {$IfDef Windows}
+  , Windows
+  {$EndIf}
+  ;
 
 {$R *.lfm}
 
@@ -51,9 +56,13 @@ procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   InfoLabel.Caption := Format(InfoLabel.Caption,
           [ProgramVersionStr, {$I %DATE%} + ' ' + {$I %TIME%}]);
-  //LogoImage.Picture.LoadFromResourceName(HINSTANCE, 'MAINICON');
+  {$IfDef Windows}
   LogoImage.Picture.Icon.Handle := LoadImage(HInstance, 'MAINICON', IMAGE_ICON,
       64, 64, LR_DEFAULTCOLOR);
+  {$EndIf}
+  {$IfDef Linux}
+  LogoImage.Picture.LoadFromResourceName(HINSTANCE, 'MAINICON'); // In Windows gets 32x32 size
+  {$EndIf}
 end;
 
 end.
