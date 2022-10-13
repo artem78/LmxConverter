@@ -272,7 +272,6 @@ begin
 
     Result.Add(Landmark);
   end;
-  FeatureArr.Free;
 end;
 
 { TJSONLandmarksReader }
