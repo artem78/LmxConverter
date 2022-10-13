@@ -232,33 +232,45 @@ type
 function TGeoJSONReader.ReadLandmarks: TLandmarks;
 var
   FeatureArr: TJSONArray;
-  FeatureObj: TJSONObject;
+  FeatureObj, Geometry: TJSONObject;
   Idx: Integer;
   Landmark: TLandmark;
 begin
-  FeatureArr := TJSONObject(JSON).Arrays['features'];
   Result := TLandmarks.Create();
+
+  if TJSONObject(JSON).Get('type', '') <> 'FeatureCollection' then
+    Exit;
+
+  FeatureArr := TJSONObject(JSON).Arrays['features'];
   Result.Capacity := FeatureArr.Count;
   for Idx := 0 to FeatureArr.Count - 1 do
   begin
     FeatureObj := FeatureArr.Objects[Idx];
+
+    if FeatureObj.Get('type', '') <> 'Feature' then
+      Continue;
+
     Landmark := TLandmark.Create;
 
     { Coordinates }
 
-    try
-      Landmark.Lon := FeatureObj.FindPath('geometry.coordinates[0]').AsFloat;
-    except
-    end;
+    Geometry := TJSONObject(FeatureObj.Find('geometry'));
+    if Assigned(Geometry) and (Geometry.Get('type', '') = 'Point') then
+    begin
+      try
+        Landmark.Lon := Geometry.FindPath('coordinates[0]').AsFloat;
+      except
+      end;
 
-    try
-      Landmark.Lat := FeatureObj.FindPath('geometry.coordinates[1]').AsFloat;
-    except
-    end;
+      try
+        Landmark.Lat := Geometry.FindPath('coordinates[1]').AsFloat;
+      except
+      end;
 
-    try
-      Landmark.Alt := FeatureObj.FindPath('geometry.coordinates[2]').AsFloat;
-    except
+      try
+        Landmark.Alt := Geometry.FindPath('coordinates[2]').AsFloat;
+      except
+      end;
     end;
 
 
