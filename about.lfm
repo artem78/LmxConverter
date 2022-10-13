@@ -2,16 +2,16 @@ object AboutForm: TAboutForm
   Left = 347
   Height = 161
   Top = 209
-  Width = 371
+  Width = 456
   BorderStyle = bsDialog
   Caption = 'About'
   ClientHeight = 161
-  ClientWidth = 371
+  ClientWidth = 456
   OnCreate = FormCreate
   Position = poOwnerFormCenter
   LCLVersion = '2.0.12.0'
   object InfoLabel: TLabel
-    Left = 16
+    Left = 96
     Height = 75
     Top = 16
     Width = 321
@@ -29,13 +29,20 @@ object AboutForm: TAboutForm
     TabOrder = 0
   end
   object CheckForUpdatesButton: TButton
-    Left = 200
+    AnchorSideRight.Side = asrBottom
+    Left = 287
     Height = 25
-    Top = 118
+    Top = 120
     Width = 155
-    Anchors = [akLeft, akBottom]
+    Anchors = [akRight, akBottom]
     Caption = 'Check for updates'
     OnClick = CheckForUpdatesButtonClick
     TabOrder = 1
+  end
+  object LogoImage: TImage
+    Left = 16
+    Height = 64
+    Top = 16
+    Width = 64
   end
 end

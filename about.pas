@@ -6,13 +6,14 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  LCLIntf;
+  LCLIntf, ExtCtrls;
 
 type
 
   { TAboutForm }
 
   TAboutForm = class(TForm)
+    LogoImage: TImage;
     OpenGitHubButton: TButton;
     CheckForUpdatesButton: TButton;
     InfoLabel: TLabel;
@@ -30,7 +31,7 @@ var
 
 implementation
 
-uses Utils;
+uses Utils, Windows;
 
 {$R *.lfm}
 
@@ -50,6 +51,9 @@ procedure TAboutForm.FormCreate(Sender: TObject);
 begin
   InfoLabel.Caption := Format(InfoLabel.Caption,
           [ProgramVersionStr, {$I %DATE%} + ' ' + {$I %TIME%}]);
+  //LogoImage.Picture.LoadFromResourceName(HINSTANCE, 'MAINICON');
+  LogoImage.Picture.Icon.Handle := LoadImage(HInstance, 'MAINICON', IMAGE_ICON,
+      64, 64, LR_DEFAULTCOLOR);
 end;
 
 end.
