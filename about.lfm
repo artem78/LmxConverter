@@ -1,52 +1,48 @@
 object AboutForm: TAboutForm
-  Left = 0
-  Height = 104
-  Top = 0
-  Width = 371
+  Left = 347
+  Height = 161
+  Top = 209
+  Width = 456
   BorderStyle = bsDialog
   Caption = 'About'
-  ClientHeight = 104
-  ClientWidth = 371
+  ClientHeight = 161
+  ClientWidth = 456
   OnCreate = FormCreate
   Position = poOwnerFormCenter
-  LCLVersion = '1.6.0.4'
-  Visible = False
-  object Label1: TLabel
-    Left = 16
-    Height = 30
+  LCLVersion = '2.0.12.0'
+  object InfoLabel: TLabel
+    Left = 96
+    Height = 75
     Top = 16
-    Width = 103
-    Caption = 'LMX Converter v%s'#13#10'Compiled: %s'
+    Width = 321
+    Caption = 'LMX Converter v%s'#13#10'Released: %s'#13#10'Created by: Artem Demin (artem78) <megabyte1024@ya.ru>'#13#10#13#10'This is freeware software licensed under GNU GPL.'
     ParentColor = False
   end
   object OpenGitHubButton: TButton
-    Left = 88
+    Left = 16
     Height = 25
-    Top = 61
+    Top = 118
     Width = 125
     Anchors = [akLeft, akBottom]
     Caption = 'GitHub page'
     OnClick = OpenGitHubButtonClick
-    TabOrder = 1
-  end
-  object CloseButton: TButton
-    Left = 16
-    Height = 25
-    Top = 61
-    Width = 54
-    Anchors = [akLeft, akBottom]
-    Caption = 'Ok'
-    OnClick = CloseButtonClick
     TabOrder = 0
   end
-  object CheckUpdatesButton: TButton
-    Left = 232
+  object CheckForUpdatesButton: TButton
+    AnchorSideRight.Side = asrBottom
+    Left = 287
     Height = 25
-    Top = 61
-    Width = 123
-    Anchors = [akLeft, akBottom]
-    Caption = 'Check new version'
-    OnClick = CheckUpdatesButtonClick
-    TabOrder = 2
+    Top = 120
+    Width = 155
+    Anchors = [akRight, akBottom]
+    Caption = 'Check for updates'
+    OnClick = CheckForUpdatesButtonClick
+    TabOrder = 1
+  end
+  object LogoImage: TImage
+    Left = 16
+    Height = 64
+    Top = 16
+    Width = 64
   end
 end

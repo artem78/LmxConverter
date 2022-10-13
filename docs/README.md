@@ -1,47 +1,54 @@
 # Lmx Converter
+
 ## Nokia landmarks converter
 
 ![](img/screenshot.png)
 
-Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) to another formats: [KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) and [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format). This may be useful if you want to export landmarks from your phone to other programs (like JOSM or Google Earth). Converted file will be saved in folder, where source file located.
+Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) to/from another formats ([KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language), [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format), [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON)). This may be useful if you want to export landmarks from your Nokia phone to other programs (like [JOSM](https://josm.openstreetmap.de/) or [Google Earth](https://www.google.com/earth/)). Converted files save in the same dir.
+
+## Download
+
+You can download latest build for MS Windows [here](https://github.com/artem78/LmxConverter/releases/latest).
 
 ## How to get lmx-file from my phone?
+
 1. Go to `Configurations` --> `Landmarks` or `Applications` --> `Location` --> `Landmarks` depending of your Symbian OS version
-1. Select landmarks, which you want to export
+1. Select landmarks you want to export
 1. In menu press `Send`, write any file name and choose suitable transferring method
 
 ![Landmarks export](img/landmarks-export.gif)
 
-## Exported fields
+## List of exported fields
 
-|                                  | LMX | GPX | KML |
-|----------------------------------|-----|-----|-----|
-| Name                             |  +  |  +  |  +  |
-| Description                      |  +  |  +  |  +  |
-| Coordinates (lat + lon)          |  +  |  +  |  +  |
-| Altitude                         |  +  |  +  |  +  |
-| Accuracy (horizontal + vertical) |  +  |     |     |
-| Address                          |  +  |     |  +  |
-| Phone number                     |  +  |     |  +  |
-| Link                             |     |     |     |
-| Category                         |  +  |     |  +  |
+|                                  | LMX | GPX | KML | GeoJSON |
+|----------------------------------|-----|-----|-----|---------|
+| Name                             |  +  |  +  |  +  |    +    |
+| Description                      |  +  |  +  |  +  |         |
+| Coordinates (lat + lon)          |  +  |  +  |  +  |    +    |
+| Altitude                         |  +  |  +  |  +  |    +    |
+| Accuracy (horizontal + vertical) |  +  |     |     |         |
+| Address                          |  +  |     |  +  |         |
+| Phone number                     |  +  |     |  +  |         |
+| Link                             |     |     |     |         |
+| Category                         |  +  |     |  +  |         |
 
-## Convert example
+## Conversion examples
+
 input file `MyLandmarks.lmx`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <lm:lmx xmlns:lm="http://www.nokia.com/schemas/location/landmarks/1/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nokia.com/schemas/location/landmarks/1/0/ lmx.xsd">
 	<lm:landmarkCollection>
-		<lm:name>Ориентиры Тест</lm:name>
+		<lm:name>Test landmarks</lm:name>
 		<lm:landmark>
-			<lm:name>Малина оч круп</lm:name>
-			<lm:description></lm:description>
+			<lm:name>Mount Everest</lm:name>
+			<lm:description>The highest point of the Earth</lm:description>
 			<lm:coordinates>
-				<lm:latitude>55.958761251501</lm:latitude>
-				<lm:longitude>37.164745545607</lm:longitude>
-				<lm:altitude>203.5</lm:altitude>
-				<lm:horizontalAccuracy>16.7166042327881</lm:horizontalAccuracy>
-				<lm:verticalAccuracy>22</lm:verticalAccuracy>
+				<lm:latitude>27.98806</lm:latitude>
+				<lm:longitude>86.92528</lm:longitude>
+				<lm:altitude>8848.86</lm:altitude>
+				<lm:horizontalAccuracy></lm:horizontalAccuracy>
+				<lm:verticalAccuracy></lm:verticalAccuracy>
 			</lm:coordinates>
 			<lm:addressInfo>
 				<lm:street></lm:street>
@@ -52,36 +59,51 @@ input file `MyLandmarks.lmx`:
 				<lm:phoneNumber></lm:phoneNumber>
 			</lm:addressInfo>
 			<lm:category>
-				<lm:name>Ягоды</lm:name>
+				<lm:name>Mountains</lm:name>
+			</lm:category>
+			<lm:category>
+				<lm:name>World records</lm:name>
 			</lm:category>
 		</lm:landmark>
 		<lm:landmark>
-			<lm:name>Оч. Интересное место</lm:name>
-			<lm:description>Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§</lm:description>
+			<lm:name>Mariana Trench</lm:name>
 			<lm:coordinates>
-				<lm:latitude>56.1234</lm:latitude>
-				<lm:longitude>44.9876</lm:longitude>
+				<lm:latitude>11.35</lm:latitude>
+				<lm:longitude>142.2</lm:longitude>
+				<lm:altitude>-10984</lm:altitude>
+			</lm:coordinates>
+			<lm:category>
+				<lm:name>World records</lm:name>
+			</lm:category>
+		</lm:landmark>
+		<lm:landmark>
+			<lm:name>Some place</lm:name>
+			<lm:description>This is the description of very interesting place. It can cantains special characters like @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§. Также можно писать по-русски и даже по-китайски - 漢語, 汉语, 中文.</lm:description>
+			<lm:coordinates>
+				<lm:latitude>-56.1234</lm:latitude>
+				<lm:longitude>-44.9876</lm:longitude>
 				<lm:altitude>123.669998168945</lm:altitude>
 				<lm:horizontalAccuracy>101.620002746582</lm:horizontalAccuracy>
 				<lm:verticalAccuracy>5.32000017166138</lm:verticalAccuracy>
 			</lm:coordinates>
 			<lm:addressInfo>
-				<lm:street>Ленина</lm:street>
+				<lm:street>Long Street</lm:street>
 				<lm:postalCode>123456</lm:postalCode>
-				<lm:city>Ленинск</lm:city>
-				<lm:state>Ленинградская обл.</lm:state>
-				<lm:country>Русь</lm:country>
-				<lm:phoneNumber>+70001112233</lm:phoneNumber>
+				<lm:city>London</lm:city>
+				<lm:state>Some state</lm:state>
+				<lm:country>Great Britain</lm:country>
+				<lm:phoneNumber>+01112223344</lm:phoneNumber>
 			</lm:addressInfo>
 			<lm:category>
-				<lm:name>Добавить на OSM</lm:name>
+				<lm:name>Test</lm:name>
 			</lm:category>
-			<lm:category>
-				<lm:name>Разное</lm:name>
-			</lm:category>
-			<lm:category>
-				<lm:name>OSM необработанные</lm:name>
-			</lm:category>
+		</lm:landmark>
+		<lm:landmark>
+			<lm:name>Lat and Lon only</lm:name>
+			<lm:coordinates>
+				<lm:latitude>46.3393</lm:latitude>
+				<lm:longitude>48.035</lm:longitude>
+			</lm:coordinates>
 		</lm:landmark>
 	</lm:landmarkCollection>
 </lm:lmx>
@@ -93,50 +115,49 @@ output file `MyLandmarks.kml`:
 <kml xmlns="http://www.opengis.net/kml/2.2">
   <Document>
     <Folder>
-      <name>Ягоды</name>
+      <name>Mountains</name>
       <Placemark>
-        <name>Малина оч круп</name>
+        <name>Mount Everest</name>
+        <description><![CDATA[The highest point of the Earth]]></description>
         <Point>
-          <coordinates>37.164745545607,55.958761251501,203.5</coordinates>
+          <coordinates>86.92528,27.98806,8848.86</coordinates>
         </Point>
       </Placemark>
     </Folder>
     <Folder>
-      <name>Добавить на OSM</name>
+      <name>World records</name>
       <Placemark>
-        <name>Оч. Интересное место</name>
-        <address>Ленина, Ленинск, Ленинградская обл., Русь, 123456</address>
-        <phoneNumber>+70001112233</phoneNumber>
-        <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
+        <name>Mount Everest</name>
+        <description><![CDATA[The highest point of the Earth]]></description>
         <Point>
-          <coordinates>44.9876,56.1234,123.669998168945</coordinates>
+          <coordinates>86.92528,27.98806,8848.86</coordinates>
+        </Point>
+      </Placemark>
+      <Placemark>
+        <name>Mariana Trench</name>
+        <Point>
+          <coordinates>142.2,11.35,-10984</coordinates>
         </Point>
       </Placemark>
     </Folder>
     <Folder>
-      <name>Разное</name>
+      <name>Test</name>
       <Placemark>
-        <name>Оч. Интересное место</name>
-        <address>Ленина, Ленинск, Ленинградская обл., Русь, 123456</address>
-        <phoneNumber>+70001112233</phoneNumber>
-        <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
+        <name>Some place</name>
+        <address>Long Street, London, Some state, Great Britain, 123456</address>
+        <phoneNumber>+01112223344</phoneNumber>
+        <description><![CDATA[This is the description of very interesting place. It can cantains special characters like @/;+&%<>£€$¥¤[]{}~№#|§. Также можно писать по-русски и даже по-китайски - 漢語, 汉语, 中文.]]></description>
         <Point>
-          <coordinates>44.9876,56.1234,123.669998168945</coordinates>
+          <coordinates>-44.9876,-56.1234,123.669998168945</coordinates>
         </Point>
       </Placemark>
     </Folder>
-    <Folder>
-      <name>OSM необработанные</name>
-      <Placemark>
-        <name>Оч. Интересное место</name>
-        <address>Ленина, Ленинск, Ленинградская обл., Русь, 123456</address>
-        <phoneNumber>+70001112233</phoneNumber>
-        <description><![CDATA[Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&%<>£€$¥¤[]{}~№#|§]]></description>
-        <Point>
-          <coordinates>44.9876,56.1234,123.669998168945</coordinates>
-        </Point>
-      </Placemark>
-    </Folder>
+    <Placemark>
+      <name>Lat and Lon only</name>
+      <Point>
+        <coordinates>48.035,46.3393</coordinates>
+      </Point>
+    </Placemark>
   </Document>
 </kml>
 ```
@@ -145,14 +166,67 @@ output file `MyLandmarks.gpx`:
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
-  <wpt lat="55.958761251501" lon="37.164745545607">
-    <ele>203.5</ele>
-    <name>Малина оч круп</name>
+  <wpt lat="27.98806" lon="86.92528">
+    <ele>8848.86</ele>
+    <name>Mount Everest</name>
+    <desc>The highest point of the Earth</desc>
   </wpt>
-  <wpt lat="56.1234" lon="44.9876">
+  <wpt lat="11.35" lon="142.2">
+    <ele>-10984</ele>
+    <name>Mariana Trench</name>
+  </wpt>
+  <wpt lat="-56.1234" lon="-44.9876">
     <ele>123.669998168945</ele>
-    <name>Оч. Интересное место</name>
-    <desc>Это описание гео-закладки. Оно может быть длинное и не очень, а также содержать различные символы вроде этих: @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§</desc>
+    <name>Some place</name>
+    <desc>This is the description of very interesting place. It can cantains special characters like @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§. Также можно писать по-русски и даже по-китайски - 漢語, 汉语, 中文.</desc>
+  </wpt>
+  <wpt lat="46.3393" lon="48.035">
+    <name>Lat and Lon only</name>
   </wpt>
 </gpx>
+```
+
+output file `MyLandmarks.geojson`
+```json
+{
+  "generator" : "LMX Converter 1.3",
+  "type" : "FeatureCollection",
+  "features" : [{
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [8.6925280000000001E+001, 2.7988060000000001E+001, 8.8488600000000006E+003]
+      },
+      "properties" : {
+        "name" : "Mount Everest"
+      }
+    }, {
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [1.4219999999999999E+002, 1.1350000000000000E+001, -1.0984000000000000E+004]
+      },
+      "properties" : {
+        "name" : "Mariana Trench"
+      }
+    }, {
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [-4.4987600000000000E+001, -5.6123399999999997E+001, 1.2366999816894500E+002]
+      },
+      "properties" : {
+        "name" : "Some place"
+      }
+    }, {
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [4.8034999999999997E+001, 4.6339300000000001E+001]
+      },
+      "properties" : {
+        "name" : "Lat and Lon only"
+      }
+    }]
+}
 ```

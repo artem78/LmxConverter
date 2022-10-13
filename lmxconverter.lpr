@@ -13,6 +13,11 @@ uses
 {$R *.res}
 
 begin
+  // heaptrc settings
+  {$IF DECLARED(heaptrc)}
+  globalSkipIfNoLeaks := true;
+  {$ENDIF}
+
   Application.Title:='LMX Converter';
   RequireDerivedFormResource:=True;
   Application.Initialize;
