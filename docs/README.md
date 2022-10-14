@@ -2,7 +2,7 @@
 
 ## Nokia landmarks converter
 
-![](img/screenshot.png)
+![](img/screenshot_in_linux_mint.png)
 
 Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) to/from another formats ([KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language), [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format), [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON)). This may be useful if you want to export landmarks from your Nokia phone to other programs (like [JOSM](https://josm.openstreetmap.de/) or [Google Earth](https://www.google.com/earth/)). Converted files save in the same dir.
 
