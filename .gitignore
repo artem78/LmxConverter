@@ -34,3 +34,10 @@ lib/
 /my/
 /Release/
 /config.ini
+
+# Linux executable:
+/lmxconverter
+
+# Linux build files
+/DEBUILD/
+/DEBUILD.sh

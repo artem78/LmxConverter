@@ -63,6 +63,11 @@ uses
 
 {$R *.lfm}
 
+function MyGetApplicationName: String;
+begin
+  Result := 'LMXConverter';
+end;
+
 { TMainForm }
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
@@ -171,6 +176,14 @@ procedure TMainForm.FormCreate(Sender: TObject);
   end;
 
 begin
+  OnGetApplicationName := @MyGetApplicationName;
+
+  {$IfDef Linux}
+  if ProgramDirectory.StartsWith('/usr/bin') then
+    IniPropStorage.IniFileName := ConcatPaths([GetAppConfigDir(False),
+                                               IniPropStorage.IniFileName]);
+  {$EndIf}
+
   // Read settings from INI file
   try
     OutputFormat := StrToFormat(IniPropStorage.ReadString('format', 'kml'));

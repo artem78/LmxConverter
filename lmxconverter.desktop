@@ -1,0 +1,16 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Type=Application
+Name=LMX Converter
+Name[ru]=Конвертер LMX файлов
+GenericName=File converter
+Comment=Tool for conversion between Nokia landmark files (LMX) and other geographical formats
+Comment[ru]=Преобразует LMX файлы с телефонов Nokia в другие форматы геоданных
+Exec="/usr/bin/lmxconverter"
+#StartupNotify=false
+#StartupWMClass=Lmxconverter
+Terminal=false
+Categories=Utility;FileTools;Geoscience
+Icon=lmxconverter
+
