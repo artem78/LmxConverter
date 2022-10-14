@@ -63,6 +63,8 @@ override_dh_auto_build:
 override_dh_auto_install:
 	install -d -m 755 &quot;$(ROOT)/usr/bin&quot;
 	install -s -m 755 ?EXECUTABLE? &quot;$(ROOT)/usr/bin&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/applications&quot;
+	install -m 644 &quot;lmxconverter.desktop&quot; &quot;$(ROOT)/usr/share/applications&quot;
 
 %:
 	dh $@
@@ -74,6 +76,8 @@ override_dh_auto_install:
 ?CP? *.pas ?TEMPFOLDER?/
 ?CP? *.lfm ?TEMPFOLDER?/
 ?CP? *.ico ?TEMPFOLDER?/
+?CP? *.desktop ?TEMPFOLDER?/
+?CP? -r debian ?TEMPFOLDER?/
 "/>
       <Item10 Name="lazpackager/maintainer" Value="Artem Demin (artem78)"/>
       <Item11 Name="lazpackager/maintainer_email" Value="megabyte1024@ya.ru"/>

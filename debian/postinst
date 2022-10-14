@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e
+
+
+# Install .desktop file
+
+if [ "$1" = "configure" ] && [ -x "`which xdg-desktop-menu 2>/dev/null`" ] ; then
+    xdg-desktop-menu install --novendor /usr/share/applications/lmxconverter.desktop || true
+fi
+
