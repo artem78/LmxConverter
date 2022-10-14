@@ -1,0 +1,22 @@
+#!/bin/sh
+
+set -e
+
+
+# Remove .desktop file
+
+if [ "$1" = "configure" ] && [ -x "`which xdg-desktop-menu 2>/dev/null`" ] ; then
+    xdg-desktop-menu uninstall --novendor /usr/share/applications/lmxconverter.desktop || true
+fi
+
+
+# Remove icons
+
+if [ "$1" = "configure" ] && [ -x "`which xdg-icon-resource 2>/dev/null`" ] ; then
+    xdg-icon-resource uninstall --size 16 lmxconverter || true
+    xdg-icon-resource uninstall --size 24 lmxconverter || true
+    xdg-icon-resource uninstall --size 32 lmxconverter || true
+    xdg-icon-resource uninstall --size 48 lmxconverter || true
+    xdg-icon-resource uninstall --size 64 lmxconverter || true
+fi
+

@@ -4,7 +4,7 @@
 
 ![](img/screenshot.png)
 
-Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) to/from another formats ([KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language) and [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format)). This may be useful if you want to export landmarks from your Nokia phone to other programs (like [JOSM](https://josm.openstreetmap.de/) or [Google Earth](https://www.google.com/earth/)). Converted files save in the same dir.
+Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) to/from another formats ([KML](https://en.wikipedia.org/wiki/Keyhole_Markup_Language), [GPX](https://en.wikipedia.org/wiki/GPS_Exchange_Format), [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON)). This may be useful if you want to export landmarks from your Nokia phone to other programs (like [JOSM](https://josm.openstreetmap.de/) or [Google Earth](https://www.google.com/earth/)). Converted files save in the same dir.
 
 ## Download
 
@@ -20,17 +20,17 @@ You can download latest build for MS Windows [here](https://github.com/artem78/L
 
 ## List of exported fields
 
-|                                     | LMX | GPX | KML |
-|-------------------------------------|-----|-----|-----|
-| Name                                |  +  |  +  |  +  |
-| Description                         |  +  |  +  |  +  |
-| Coordinates (latitude and longitude)|  +  |  +  |  +  |
-| Altitude                            |  +  |  +  |  +  |
-| Accuracy (horizontal and vertical)  |  +  |     |     |
-| Address                             |  +  |     |  +  |
-| Phone number                        |  +  |     |  +  |
-| Link                                |     |     |     |
-| Category                            |  +  |     |  +  |
+|                                     | LMX | GPX | KML | GeoJSON |
+|-------------------------------------|-----|-----|-----|---------|
+| Name                                |  +  |  +  |  +  |    +    |
+| Description                         |  +  |  +  |  +  |         |
+| Coordinates (latitude and longitude)|  +  |  +  |  +  |    +    |
+| Altitude                            |  +  |  +  |  +  |    +    |
+| Accuracy (horizontal and vertical)  |  +  |     |     |         |
+| Address                             |  +  |     |  +  |         |
+| Phone number                        |  +  |     |  +  |         |
+| Link                                |     |     |     |         |
+| Category                            |  +  |     |  +  |         |
 
 ## Conversion examples
 
@@ -184,4 +184,49 @@ output file `MyLandmarks.gpx`:
     <name>Lat and Lon only</name>
   </wpt>
 </gpx>
+```
+
+output file `MyLandmarks.geojson`
+```json
+{
+  "generator" : "LMX Converter 1.3",
+  "type" : "FeatureCollection",
+  "features" : [{
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [8.6925280000000001E+001, 2.7988060000000001E+001, 8.8488600000000006E+003]
+      },
+      "properties" : {
+        "name" : "Mount Everest"
+      }
+    }, {
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [1.4219999999999999E+002, 1.1350000000000000E+001, -1.0984000000000000E+004]
+      },
+      "properties" : {
+        "name" : "Mariana Trench"
+      }
+    }, {
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [-4.4987600000000000E+001, -5.6123399999999997E+001, 1.2366999816894500E+002]
+      },
+      "properties" : {
+        "name" : "Some place"
+      }
+    }, {
+      "type" : "Feature",
+      "geometry" : {
+        "type" : "Point",
+        "coordinates" : [4.8034999999999997E+001, 4.6339300000000001E+001]
+      },
+      "properties" : {
+        "name" : "Lat and Lon only"
+      }
+    }]
+}
 ```

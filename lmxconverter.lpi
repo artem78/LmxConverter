@@ -17,9 +17,88 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="3"/>
-      <StringTable ProductVersion="1.3"/>
+      <MinorVersionNr Value="4"/>
+      <StringTable ProductVersion="1.4"/>
     </VersionInfo>
+    <CustomData Count="13">
+      <Item0 Name="lazpackager/copyright" Value="Artem Demin"/>
+      <Item1 Name="lazpackager/deb/ppa"/>
+      <Item2 Name="lazpackager/deb/series" Value="precise"/>
+      <Item3 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
+
+  * Original version ?VERSION? packaged with lazdebian
+
+ -- ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>  ?DATER?
+"/>
+      <Item4 Name="lazpackager/deb/tpl_control" Value="Source: ?PACKAGE_NAME?
+Maintainer: ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>
+Section: misc
+Priority: optional
+Standards-Version: 3.9.3
+Build-Depends: fpc, lazarus, lcl, lcl-utils, debhelper (>= 8)
+
+Package: ?PACKAGE_NAME?
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends},
+Description: ?DESCRIPTION?
+ ?DESCRIPTION_LONG?
+"/>
+      <Item5 Name="lazpackager/deb/tpl_copyright" Value="Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+
+Files: *
+Copyright: ?COPYRIGHT?
+License: GPL-3
+"/>
+      <Item6 Name="lazpackager/deb/tpl_rules" Value="#!/usr/bin/make -f
+
+ROOT = $(CURDIR)/debian/?PACKAGE_NAME?
+
+override_dh_auto_clean:
+	$(RM) -r lib
+	$(RM) lib *.res ?EXECUTABLE?
+
+override_dh_auto_build:
+	lazbuild ?PROJECT?
+
+override_dh_auto_install:
+	install -d -m 755 &quot;$(ROOT)/usr/bin&quot;
+	install -s -m 755 ?EXECUTABLE? &quot;$(ROOT)/usr/bin&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/applications&quot;
+	install -m 644 &quot;lmxconverter.desktop&quot; &quot;$(ROOT)/usr/share/applications&quot;
+#	for IconSize in 16 24 32 48 64 ; do \
+#		install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/${IconSize}/apps&quot;; \
+#		install -m 644 -T &quot;icons/lmxconverter_${IconSize}px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/${IconSize}/apps/lmxconverter.png&quot;; \
+#	done
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/16/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_16px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/16/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/24/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_24px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/24/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/32/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_32px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/32/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/48/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_48px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/48/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/64/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_64px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/64/apps/lmxconverter.png&quot;
+
+%:
+	dh $@
+"/>
+      <Item7 Name="lazpackager/description" Value="Nokia landmarks converter"/>
+      <Item8 Name="lazpackager/description_long" Value="Converts Nokia landmarks files (lmx) to another formats"/>
+      <Item9 Name="lazpackager/export_cmd" Value="?CP? *.lpi ?TEMPFOLDER?/
+?CP? *.lpr ?TEMPFOLDER?/
+?CP? *.pas ?TEMPFOLDER?/
+?CP? *.lfm ?TEMPFOLDER?/
+?CP? *.ico ?TEMPFOLDER?/
+?CP? *.desktop ?TEMPFOLDER?/
+?CP? -r debian ?TEMPFOLDER?/
+mkdir -p ?TEMPFOLDER?/icons/
+?CP? icons/*.png ?TEMPFOLDER?/icons/
+"/>
+      <Item10 Name="lazpackager/maintainer" Value="Artem Demin (artem78)"/>
+      <Item11 Name="lazpackager/maintainer_email" Value="megabyte1024@ya.ru"/>
+      <Item12 Name="lazpackager/package_name" Value="lmxconverter"/>
+    </CustomData>
     <BuildModes Count="3">
       <Item1 Name="Default" Default="True"/>
       <Item2 Name="Debug">
@@ -107,7 +186,7 @@
         <PackageName Value="LCL"/>
       </Item1>
     </RequiredPackages>
-    <Units Count="4">
+    <Units Count="5">
       <Unit0>
         <Filename Value="lmxconverter.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -131,6 +210,11 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="utils.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Utils"/>
+      </Unit4>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -149,6 +233,7 @@
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="False"/>
+        <DebugInfoType Value="dsDwarf2Set"/>
         <StripSymbols Value="True"/>
       </Debugging>
       <LinkSmart Value="True"/>

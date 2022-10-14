@@ -6,32 +6,52 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
-  StdCtrls, ExtCtrls, IniPropStorage{, LCLProc}, about;
+  StdCtrls, ExtCtrls, IniPropStorage, EditBtn{, LCLProc}, about;
 
 type
+
+  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX, ofmtGeoJSON);
 
   { TMainForm }
 
   TMainForm = class(TForm)
     AboutButton: TButton;
-    ChooseInputFileButton: TButton;
+    SameDirUsedCheckBox: TCheckBox;
+    OutputDirEdit: TDirectoryEdit;
+    OutputDirLabel: TLabel;
+    OutputFormatLabel: TLabel;
+    OutputFormatComboBox: TComboBox;
+    InputFileNameEdit: TFileNameEdit;
+    InputFileNameLabel: TLabel;
+    OpenOutputDirButton: TButton;
     ConvertButton: TButton;
     IniPropStorage: TIniPropStorage;
-    InputFilePathEdit: TEdit;
-    OpenDialog: TOpenDialog;
-    OutputFormatRadioGroup: TRadioGroup;
     procedure AboutButtonClick(Sender: TObject);
-    procedure ChooseInputFileButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure OutputFormatRadioGroupClick(Sender: TObject);
+    procedure InputFileNameEditButtonClick(Sender: TObject);
+    procedure InputFileNameEditChange(Sender: TObject);
+    procedure OpenOutputDirButtonClick(Sender: TObject);
+    procedure OutputDirEditChange(Sender: TObject);
+    procedure OutputFormatComboBoxChange(Sender: TObject);
+    procedure SameDirUsedCheckBoxChange(Sender: TObject);
   private
-    { private declarations }
-  public
-    { public declarations }
-  end;
+    function GetInputFileName: String;
+    procedure SetInputFileName(const AFileName: string);
+    function GetOutputFormat: TOutputFormat;
+    procedure SetOutputFormat(AFormat: TOutputFormat);
+    function GetOutputDir: String;
+    procedure SetOutputDir(const ADir: String);
+    function GetSameDirUsed: Boolean;
+    procedure SetSameDirUsed(AVal: Boolean);
 
-  TOutputFormat = (ofmtKML=0, ofmtGPX, ofmtLMX);
+    procedure UseOutputDirFromInputFileName;
+  public
+    property InputFileName: String read GetInputFileName write SetInputFileName;
+    property OutputFormat: TOutputFormat read GetOutputFormat write SetOutputFormat;
+    property OutputDir: String read GetOutputDir write SetOutputDir;
+    property SameDirUsed: Boolean read GetSameDirUsed write SetSameDirUsed;
+  end;
 
 var
   MainForm: TMainForm;
@@ -39,17 +59,16 @@ var
 implementation
 
 uses
-  LandmarksConverter;
+  LandmarksConverter, Utils, LCLIntf, LazFileUtils;
 
 {$R *.lfm}
 
-{ TMainForm }
-
-procedure TMainForm.ChooseInputFileButtonClick(Sender: TObject);
+function MyGetApplicationName: String;
 begin
-  if OpenDialog.Execute then;
-     InputFilePathEdit.Text := OpenDialog.FileName;
+  Result := 'LMXConverter';
 end;
+
+{ TMainForm }
 
 procedure TMainForm.AboutButtonClick(Sender: TObject);
 begin
@@ -58,23 +77,29 @@ end;
 
 procedure TMainForm.ConvertButtonClick(Sender: TObject);
 var
-  InFileName, OutFileName, OutFileExt: String;
+  OutFileName, OutFileExt, NewOutFileNameOnly: String;
   Converter: TLandmarksConverter;
   FailMessage, SuccessMsg: String;
 begin
-  InFileName := InputFilePathEdit.Text;
-
   // Some checks before
-  if InFileName = '' then
+  if InputFileName.IsEmpty or OutputDir.IsEmpty then
      Exit; // Nothing to do
 
-  if not FileExists(InFileName) then
+  if not FileExists(InputFileName) then
   begin
-    MessageDlg(Format('"%s" is not a valid input file!', [InFileName]), mtError, [mbOK], 0);
+    MessageDlg(Format('"%s" is not a valid input file!',
+                      [InputFileName]), mtError, [mbOK], 0);
     Exit;
   end;
 
-  case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
+  if not DirectoryIsWritable(OutputDir) then
+  begin
+    MessageDlg(Format('"%s" is not a valid directory!',
+                      [OutputDir]), mtError, [mbOK], 0);
+    Exit;
+  end;
+
+  case OutputFormat of
     ofmtKML:
       OutFileExt := 'kml';
 
@@ -84,6 +109,9 @@ begin
     ofmtLMX:
       OutFileExt := 'lmx';
 
+    ofmtGeoJSON:
+      OutFileExt := 'geojson';
+
     else
     begin
       MessageDlg('Unknown format!', mtError, [mbOK], 0);
@@ -91,18 +119,25 @@ begin
     end;
   end;
 
-  OutFileName := ChangeFileExt(InFileName, '.' + OutFileExt);
+  OutFileName := ConcatPaths([OutputDir,
+                 ExtractFileNameWithoutExt(ExtractFileNameOnly(InputFileName))
+                 + '.' + OutFileExt]);
   if FileExists(OutFileName) then
   begin
     if MessageDlg('File "' + OutFileName + '" already exist. Overwrite?',
          mtConfirmation, mbYesNo, 0) <> mrYes then
     begin
-      Exit;
+      NewOutFileNameOnly := CreateUniqueFileName(ExtractFileName(OutFileName), OutputDir);
+      if InputQuery('New file name', '', NewOutFileNameOnly) then
+        OutFileName := ConcatPaths([OutputDir, NewOutFileNameOnly])
+      else
+        Exit;
     end;
   end;
 
   // Create converter object
-  Converter := TLandmarksConverter.Create(InFileName);
+  Converter := TLandmarksConverter.Create(InputFileName);
+  Converter.Creator := 'LMX Converter ' + ProgramVersionStr;
 
   try
     try
@@ -131,31 +166,137 @@ begin
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
-var
-  OutFormat: String;
+  function StrToFormat(AStr: String): TOutputFormat;
+  var
+    Code: Word;
+  begin
+    Val('ofmt' + AStr, Result, Code);
+    if Code <> 0 then
+      raise Exception.CreateFmt('Can''t convert string "%s" to TOutputFormat', [AStr]);
+  end;
+
 begin
+  OnGetApplicationName := @MyGetApplicationName;
+
+  {$IfDef Linux}
+  if ProgramDirectory.StartsWith('/usr/bin') then
+    IniPropStorage.IniFileName := ConcatPaths([GetAppConfigDir(False),
+                                               IniPropStorage.IniFileName]);
+  {$EndIf}
+
   // Read settings from INI file
-  OutFormat := IniPropStorage.ReadString('format', 'kml');
-  if OutFormat = 'gpx' then
-     OutputFormatRadioGroup.ItemIndex := Ord(ofmtGPX)
-  else if OutFormat = 'lmx' then
-     OutputFormatRadioGroup.ItemIndex := Ord(ofmtLMX)
-  else // KML is default
-     OutputFormatRadioGroup.ItemIndex := Ord(ofmtKML);
+  try
+    OutputFormat := StrToFormat(IniPropStorage.ReadString('format', 'kml'));
+  except // KML is default
+    OutputFormat := ofmtKML;
+  end;
+  SameDirUsed := IniPropStorage.ReadBoolean('dirIgnored', True);
+  if not SameDirUsed then
+    OutputDir := IniPropStorage.ReadString('dir', '')
+  else
+    OutputDir := '';
+  //InputFileName := IniPropStorage.ReadString('lastInputFile', '');
+  InputFileNameEdit.InitialDir := ExtractFileDir(IniPropStorage.ReadString('lastInputFile', ''));
 end;
 
-procedure TMainForm.OutputFormatRadioGroupClick(Sender: TObject);
-var
-  OutFormat: String;
+procedure TMainForm.InputFileNameEditButtonClick(Sender: TObject);
 begin
-  // Save settings for output format
-  case TOutputFormat(OutputFormatRadioGroup.ItemIndex) of
-    ofmtKML: OutFormat := 'kml';
-    ofmtGPX: OutFormat := 'gpx';
-    ofmtLMX: OutFormat := 'lmx';
-    else     raise Exception.Create('Unknown format');
+  if not InputFileName.IsEmpty then
+    InputFileNameEdit.InitialDir := ExtractFileDir(InputFileName);
+end;
+
+procedure TMainForm.InputFileNameEditChange(Sender: TObject);
+begin
+  InputFileName := InputFileName;
+
+  UseOutputDirFromInputFileName;
+end;
+
+procedure TMainForm.OpenOutputDirButtonClick(Sender: TObject);
+begin
+  if not OutputDir.IsEmpty then
+    OpenDocument(OutputDir);
+end;
+
+procedure TMainForm.OutputDirEditChange(Sender: TObject);
+begin
+  OutputDir := OutputDir; // Just for trigger save
+end;
+
+procedure TMainForm.OutputFormatComboBoxChange(Sender: TObject);
+begin
+  OutputFormat := OutputFormat; // Just for trigger save
+end;
+
+procedure TMainForm.SameDirUsedCheckBoxChange(Sender: TObject);
+begin
+  SameDirUsed := SameDirUsed; // Just for trigger save
+end;
+
+function TMainForm.GetInputFileName: String;
+begin
+  Result := InputFileNameEdit.Text;
+end;
+
+procedure TMainForm.SetInputFileName(const AFileName: string);
+begin
+  InputFileNameEdit.Text := AFileName;
+
+  IniPropStorage.WriteString('lastInputFile', AFileName);
+end;
+
+function TMainForm.GetOutputFormat: TOutputFormat;
+begin
+  Result := TOutputFormat(OutputFormatComboBox.ItemIndex);
+end;
+
+procedure TMainForm.SetOutputFormat(AFormat: TOutputFormat);
+  function FormatToStr(AFormat: TOutputFormat): String;
+  begin
+    Str(AFormat, Result);
+    Result := LowerCase(Result);
+    Result := StringReplace(Result, 'ofmt', '', []);
   end;
-  IniPropStorage.WriteString('format', OutFormat);
+
+begin
+  OutputFormatComboBox.ItemIndex := Ord(AFormat);
+
+  // Save output format setting
+  IniPropStorage.WriteString('format', FormatToStr(AFormat));
+end;
+
+function TMainForm.GetOutputDir: String;
+begin
+  Result := OutputDirEdit.Text;
+end;
+
+procedure TMainForm.SetOutputDir(const ADir: String);
+begin
+  OutputDirEdit.Text := ADir;
+
+  // Save output directory setting
+  IniPropStorage.WriteString('dir', ADir);
+end;
+
+function TMainForm.GetSameDirUsed: Boolean;
+begin
+  Result := SameDirUsedCheckBox.Checked;
+end;
+
+procedure TMainForm.SetSameDirUsed(AVal: Boolean);
+begin
+  SameDirUsedCheckBox.Checked := AVal;
+
+  IniPropStorage.WriteBoolean('dirIgnored', AVal);
+
+  OutputDirEdit.Enabled := not AVal;
+  UseOutputDirFromInputFileName;
+end;
+
+procedure TMainForm.UseOutputDirFromInputFileName;
+begin
+  if SameDirUsed then
+    OutputDir := ExtractFileDir(InputFileName);
 end;
 
 end.
