@@ -8,7 +8,7 @@ Converts Nokia landmarks files ([LMX](https://wiki.openstreetmap.org/wiki/LMX)) 
 
 ## Download
 
-You can download latest build for MS Windows [here](https://github.com/artem78/LmxConverter/releases/latest).
+You can download latest build for MS Windows and Linux [here](https://github.com/artem78/LmxConverter/releases/latest).
 
 ## How to get lmx-file from my phone?
 
