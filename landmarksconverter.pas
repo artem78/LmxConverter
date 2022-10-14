@@ -212,7 +212,7 @@ type
 
 implementation
 
-uses StrUtils;
+uses StrUtils, jsonparser;
 
 const
   XMLDecimalSeparator: Char = '.';
