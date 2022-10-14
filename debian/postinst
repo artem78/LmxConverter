@@ -3,6 +3,17 @@
 set -e
 
 
+# Install icons
+
+if [ "$1" = "configure" ] && [ -x "`which xdg-icon-resource 2>/dev/null`" ] ; then
+    xdg-icon-resource install --novendor --size 16 /usr/share/icons/hicolor/16/apps/lmxconverter.png lmxconverter || true
+    xdg-icon-resource install --novendor --size 24 /usr/share/icons/hicolor/24/apps/lmxconverter.png lmxconverter || true
+    xdg-icon-resource install --novendor --size 32 /usr/share/icons/hicolor/32/apps/lmxconverter.png lmxconverter || true
+    xdg-icon-resource install --novendor --size 48 /usr/share/icons/hicolor/48/apps/lmxconverter.png lmxconverter || true
+    xdg-icon-resource install --novendor --size 64 /usr/share/icons/hicolor/64/apps/lmxconverter.png lmxconverter || true
+fi
+
+
 # Install .desktop file
 
 if [ "$1" = "configure" ] && [ -x "`which xdg-desktop-menu 2>/dev/null`" ] ; then

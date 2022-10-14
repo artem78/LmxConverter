@@ -12,4 +12,5 @@ Exec="/usr/bin/lmxconverter"
 #StartupWMClass=Lmxconverter
 Terminal=false
 Categories=Utility;FileTools;Geoscience
+Icon=lmxconverter
 
