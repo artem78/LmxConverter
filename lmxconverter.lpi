@@ -42,6 +42,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 Description: ?DESCRIPTION?
  ?DESCRIPTION_LONG?
+Homepage: https://github.com/artem78/LmxConverter
 "/>
       <Item5 Name="lazpackager/deb/tpl_copyright" Value="Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 
@@ -84,7 +85,7 @@ override_dh_auto_install:
 	dh $@
 "/>
       <Item7 Name="lazpackager/description" Value="Nokia landmarks converter"/>
-      <Item8 Name="lazpackager/description_long" Value="Converts Nokia landmarks files (lmx) to another formats"/>
+      <Item8 Name="lazpackager/description_long" Value="Tool for conversion between Nokia landmark files (LMX) and other geographical formats"/>
       <Item9 Name="lazpackager/export_cmd" Value="?CP? *.lpi ?TEMPFOLDER?/
 ?CP? *.lpr ?TEMPFOLDER?/
 ?CP? *.pas ?TEMPFOLDER?/
