@@ -59,7 +59,11 @@ var
 implementation
 
 uses
-  LandmarksConverter, Utils, LCLIntf, LazFileUtils;
+  LandmarksConverter, Utils, LCLIntf, LazFileUtils
+  {$If defined(LINUX) and (FPC_FULlVERSION <= 30200)}
+  , process
+  {$EndIf}
+  ;
 
 {$R *.lfm}
 
@@ -213,6 +217,25 @@ begin
 end;
 
 procedure TMainForm.OpenOutputDirButtonClick(Sender: TObject);
+  {$If defined(LINUX) and (FPC_FULLVERSION <= 30200)}
+  // Fix for older Lazarus versions (probably <= 2.0.12)
+  procedure OpenDocument(APath: String);
+  var
+    Proc: TProcess;
+  begin
+    if not DirectoryExistsUTF8(APath) then
+      Exit;
+
+    Proc := TProcess.Create(Nil);
+    try
+      Proc.Executable := 'xdg-open';
+      Proc.Parameters.Add(APath);
+      Proc.Execute;
+    finally
+      Proc.Free;
+    end;
+  end;
+  {$EndIf}
 begin
   if not OutputDir.IsEmpty then
     OpenDocument(OutputDir);
