@@ -22,8 +22,7 @@
       <StringTable ProductVersion="1.4.1"/>
     </VersionInfo>
     <CustomData Count="13">
-      <Item0 Name="lazpackager/copyright" Value="Artem Demin"/>
-      <Item1 Name="lazpackager/deb/ppa"/>
+      <Item0 Name="lazpackager/copyright" Value="2020-2022, Artem Demin &lt;megabyte1024@ya.ru>"/>
       <Item2 Name="lazpackager/deb/series" Value="precise"/>
       <Item3 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
 
@@ -37,15 +36,20 @@ Section: misc
 Priority: optional
 Standards-Version: 3.9.3
 Build-Depends: fpc, lazarus, lcl, lcl-utils, debhelper (>= 8)
+Homepage: https://github.com/artem78/LmxConverter
+Vcs-Git: https://github.com/artem78/LmxConverter.git
+Vcs-Browser: https://github.com/artem78/LmxConverter
 
 Package: ?PACKAGE_NAME?
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends},
 Description: ?DESCRIPTION?
  ?DESCRIPTION_LONG?
-Homepage: https://github.com/artem78/LmxConverter
+
 "/>
       <Item5 Name="lazpackager/deb/tpl_copyright" Value="Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Source: https://github.com/artem78/LmxConverter
+Upstream-Contact: ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>
 
 Files: *
 Copyright: ?COPYRIGHT?
@@ -97,7 +101,7 @@ override_dh_auto_install:
 mkdir -p ?TEMPFOLDER?/icons/
 ?CP? icons/*.png ?TEMPFOLDER?/icons/
 "/>
-      <Item10 Name="lazpackager/maintainer" Value="Artem Demin (artem78)"/>
+      <Item10 Name="lazpackager/maintainer" Value="Artem Demin"/>
       <Item11 Name="lazpackager/maintainer_email" Value="megabyte1024@ya.ru"/>
       <Item12 Name="lazpackager/package_name" Value="lmxconverter"/>
     </CustomData>
