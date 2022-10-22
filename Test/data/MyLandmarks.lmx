@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lm:lmx xmlns:lm="http://www.nokia.com/schemas/location/landmarks/1/0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.nokia.com/schemas/location/landmarks/1/0/ lmx.xsd">
+	<lm:landmarkCollection>
+		<lm:name>Test landmarks</lm:name>
+		<lm:landmark>
+			<lm:name>Mount Everest</lm:name>
+			<lm:description>The highest point of the Earth</lm:description>
+			<lm:coordinates>
+				<lm:latitude>27.98806</lm:latitude>
+				<lm:longitude>86.92528</lm:longitude>
+				<lm:altitude>8848.86</lm:altitude>
+				<lm:horizontalAccuracy></lm:horizontalAccuracy>
+				<lm:verticalAccuracy></lm:verticalAccuracy>
+			</lm:coordinates>
+			<lm:addressInfo>
+				<lm:street></lm:street>
+				<lm:postalCode></lm:postalCode>
+				<lm:city></lm:city>
+				<lm:state></lm:state>
+				<lm:country></lm:country>
+				<lm:phoneNumber></lm:phoneNumber>
+			</lm:addressInfo>
+			<lm:category>
+				<lm:name>Mountains</lm:name>
+			</lm:category>
+			<lm:category>
+				<lm:name>World records</lm:name>
+			</lm:category>
+		</lm:landmark>
+		<lm:landmark>
+			<lm:name>Mariana Trench</lm:name>
+			<lm:coordinates>
+				<lm:latitude>11.35</lm:latitude>
+				<lm:longitude>142.2</lm:longitude>
+				<lm:altitude>-10984</lm:altitude>
+			</lm:coordinates>
+			<lm:category>
+				<lm:name>World records</lm:name>
+			</lm:category>
+		</lm:landmark>
+		<lm:landmark>
+			<lm:name>Some place</lm:name>
+			<lm:description>This is the description of very interesting place. It can cantains special characters like @/;+&amp;%&lt;&gt;£€$¥¤[]{}~№#|§. Также можно писать по-русски и даже по-китайски - 漢語, 汉语, 中文.</lm:description>
+			<lm:coordinates>
+				<lm:latitude>-56.1234</lm:latitude>
+				<lm:longitude>-44.9876</lm:longitude>
+				<lm:altitude>123.669998168945</lm:altitude>
+				<lm:horizontalAccuracy>101.620002746582</lm:horizontalAccuracy>
+				<lm:verticalAccuracy>5.32000017166138</lm:verticalAccuracy>
+			</lm:coordinates>
+			<lm:addressInfo>
+				<lm:street>Long Street</lm:street>
+				<lm:postalCode>123456</lm:postalCode>
+				<lm:city>London</lm:city>
+				<lm:state>Some state</lm:state>
+				<lm:country>Great Britain</lm:country>
+				<lm:phoneNumber>+01112223344</lm:phoneNumber>
+			</lm:addressInfo>
+			<lm:category>
+				<lm:name>Test</lm:name>
+			</lm:category>
+		</lm:landmark>
+		<lm:landmark>
+			<lm:name>Lat and Lon only</lm:name>
+			<lm:coordinates>
+				<lm:latitude>46.3393</lm:latitude>
+				<lm:longitude>48.035</lm:longitude>
+			</lm:coordinates>
+		</lm:landmark>
+	</lm:landmarkCollection>
+</lm:lmx>
