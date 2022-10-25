@@ -27,6 +27,14 @@ const
   SrcDir = 'data';
   DstDir = 'out';
 
+function StrToFloat(AStr: String): Extended;
+var
+  Fmt: TFormatSettings;
+begin
+  Fmt.DecimalSeparator := '.';
+  Result := SysUtils.StrToFloat(AStr, Fmt);
+end;
+
 procedure TConverterTest.TestLmxToGpx;
 var
   Doc: TXMLDocument;
@@ -46,12 +54,12 @@ begin
     Wpt := Doc.DocumentElement.FindNode('wpt');
     CheckEquals('Mount Everest', Wpt.FindNode('name').TextContent);
     CheckEquals('The highest point of the Earth', Wpt.FindNode('desc').TextContent);
-    CheckEquals(27.98806, Wpt.Attributes.GetNamedItem('lat').TextContent.ToDouble);
-    CheckEquals(86.92528, Wpt.Attributes.GetNamedItem('lon').TextContent.ToDouble);
-    CheckEquals(8848.86, Wpt.FindNode('ele').TextContent.ToDouble);
+    CheckEquals(27.98806, StrToFloat(Wpt.Attributes.GetNamedItem('lat').TextContent));
+    CheckEquals(86.92528, StrToFloat(Wpt.Attributes.GetNamedItem('lon').TextContent));
+    CheckEquals(8848.86, StrToFloat(Wpt.FindNode('ele').TextContent));
 
     Wpt := Doc.DocumentElement.GetElementsByTagName('wpt').Item[1];
-    CheckEquals(-10984, Wpt.FindNode('ele').TextContent.ToDouble);
+    CheckEquals(-10984, StrToFloat(Wpt.FindNode('ele').TextContent));
 
     // Check description with Unicode characters
     Wpt := Doc.DocumentElement.GetElementsByTagName('wpt').Item[2];
