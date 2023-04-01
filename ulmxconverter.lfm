@@ -9,7 +9,7 @@ object MainForm: TMainForm
   ClientWidth = 686
   OnCreate = FormCreate
   Position = poScreenCenter
-  LCLVersion = '2.0.12.0'
+  LCLVersion = '2.2.4.0'
   object ConvertButton: TButton
     AnchorSideLeft.Control = Owner
     AnchorSideLeft.Side = asrCenter
@@ -28,15 +28,15 @@ object MainForm: TMainForm
     AnchorSideTop.Control = InputFileNameEdit
     AnchorSideTop.Side = asrCenter
     Left = 16
-    Height = 15
+    Height = 16
     Top = 20
-    Width = 75
+    Width = 86
     Caption = 'Landmark file:'
     ParentColor = False
   end
   object InputFileNameEdit: TFileNameEdit
     Left = 128
-    Height = 23
+    Height = 25
     Top = 16
     Width = 544
     DialogTitle = 'Choose landmark file'
@@ -57,18 +57,18 @@ object MainForm: TMainForm
     AnchorSideTop.Control = OutputFormatComboBox
     AnchorSideTop.Side = asrCenter
     Left = 16
-    Height = 15
-    Top = 52
-    Width = 80
+    Height = 16
+    Top = 53
+    Width = 91
     Caption = 'Output format:'
     ParentColor = False
   end
   object OutputFormatComboBox: TComboBox
     Left = 128
-    Height = 23
+    Height = 26
     Top = 48
     Width = 224
-    ItemHeight = 15
+    ItemHeight = 0
     Items.Strings = (
       'KML (Keyhole Markup Language)'
       'GPX (GPS eXchange Format)'
@@ -92,15 +92,15 @@ object MainForm: TMainForm
     AnchorSideTop.Control = OutputDirEdit
     AnchorSideTop.Side = asrCenter
     Left = 16
-    Height = 15
+    Height = 16
     Top = 84
-    Width = 91
+    Width = 104
     Caption = 'Output directory:'
     ParentColor = False
   end
   object OutputDirEdit: TDirectoryEdit
     Left = 128
-    Height = 23
+    Height = 25
     Top = 80
     Width = 440
     DialogTitle = 'Choose output directory'
@@ -118,7 +118,7 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrCenter
     Left = 577
     Height = 25
-    Top = 79
+    Top = 80
     Width = 99
     Caption = 'Open folder'
     OnClick = OpenOutputDirButtonClick
@@ -126,9 +126,9 @@ object MainForm: TMainForm
   end
   object SameDirUsedCheckBox: TCheckBox
     Left = 128
-    Height = 19
+    Height = 22
     Top = 112
-    Width = 140
+    Width = 160
     Caption = 'Use the same directory'
     OnChange = SameDirUsedCheckBoxChange
     TabOrder = 4

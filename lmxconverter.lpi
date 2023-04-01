@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="11"/>
+    <Version Value="12"/>
     <PathDelim Value="\"/>
     <General>
+      <Flags>
+        <CompatibilityMode Value="True"/>
+      </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
       <Title Value="LMX Converter"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
@@ -22,7 +24,7 @@
       <StringTable ProductVersion="1.4.1"/>
     </VersionInfo>
     <CustomData Count="13">
-      <Item0 Name="lazpackager/copyright" Value="2020-2023, Artem Demin &lt;megabyte1024@ya.ru>"/>
+      <Item1 Name="lazpackager/copyright" Value="2020-2023, Artem Demin &lt;megabyte1024@ya.ru>"/>
       <Item2 Name="lazpackager/deb/series" Value="precise"/>
       <Item3 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
 
