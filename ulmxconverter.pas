@@ -124,7 +124,7 @@ begin
   end;
 
   OutFileName := ConcatPaths([OutputDir,
-                 ExtractFileNameWithoutExt(ExtractFileNameOnly(InputFileName))
+                 ExtractFileNameOnly(InputFileName)
                  + '.' + OutFileExt]);
   if FileExists(OutFileName) then
   begin
