@@ -22,7 +22,7 @@
       <StringTable ProductVersion="1.4.1"/>
     </VersionInfo>
     <CustomData Count="13">
-      <Item0 Name="lazpackager/copyright" Value="2020-2022, Artem Demin &lt;megabyte1024@ya.ru>"/>
+      <Item0 Name="lazpackager/copyright" Value="2020-2023, Artem Demin &lt;megabyte1024@ya.ru>"/>
       <Item2 Name="lazpackager/deb/series" Value="precise"/>
       <Item3 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
 
