@@ -74,19 +74,19 @@ override_dh_auto_install:
 	install -d -m 755 &quot;$(ROOT)/usr/share/applications&quot;
 	install -m 644 &quot;lmxconverter.desktop&quot; &quot;$(ROOT)/usr/share/applications&quot;
 #	for IconSize in 16 24 32 48 64 ; do \
-#		install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/${IconSize}/apps&quot;; \
-#		install -m 644 -T &quot;icons/lmxconverter_${IconSize}px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/${IconSize}/apps/lmxconverter.png&quot;; \
+#		install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/${IconSize}x${IconSize}/apps&quot;; \
+#		install -m 644 -T &quot;icons/lmxconverter_${IconSize}px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/${IconSize}x${IconSize}/apps/lmxconverter.png&quot;; \
 #	done
-	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/16/apps&quot;
-	install -m 644 -T &quot;icons/lmxconverter_16px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/16/apps/lmxconverter.png&quot;
-	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/24/apps&quot;
-	install -m 644 -T &quot;icons/lmxconverter_24px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/24/apps/lmxconverter.png&quot;
-	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/32/apps&quot;
-	install -m 644 -T &quot;icons/lmxconverter_32px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/32/apps/lmxconverter.png&quot;
-	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/48/apps&quot;
-	install -m 644 -T &quot;icons/lmxconverter_48px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/48/apps/lmxconverter.png&quot;
-	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/64/apps&quot;
-	install -m 644 -T &quot;icons/lmxconverter_64px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/64/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/16x16/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_16px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/16x16/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/24x24/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_24px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/24x24/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/32x32/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_32px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/32x32/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/48x48/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_48px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/48x48/apps/lmxconverter.png&quot;
+	install -d -m 755 &quot;$(ROOT)/usr/share/icons/hicolor/64x64/apps&quot;
+	install -m 644 -T &quot;icons/lmxconverter_64px.png&quot; &quot;$(ROOT)/usr/share/icons/hicolor/64x64/apps/lmxconverter.png&quot;
 
 %:
 	dh $@
