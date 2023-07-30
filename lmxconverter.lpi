@@ -23,16 +23,17 @@
       <RevisionNr Value="2"/>
       <StringTable ProductVersion="1.4.2"/>
     </VersionInfo>
-    <CustomData Count="13">
+    <CustomData Count="14">
       <Item1 Name="lazpackager/copyright" Value="2020-2023, Artem Demin &lt;megabyte1024@ya.ru>"/>
-      <Item2 Name="lazpackager/deb/series" Value="precise"/>
-      <Item3 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
+      <Item2 Name="lazpackager/deb/ppa" Value="ppa:artem78/lmx-converter"/>
+      <Item3 Name="lazpackager/deb/series" Value="precise"/>
+      <Item4 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
 
   * Original version ?VERSION? packaged with lazdebian
 
  -- ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>  ?DATER?
 "/>
-      <Item4 Name="lazpackager/deb/tpl_control" Value="Source: ?PACKAGE_NAME?
+      <Item5 Name="lazpackager/deb/tpl_control" Value="Source: ?PACKAGE_NAME?
 Maintainer: ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>
 Section: misc
 Priority: optional
@@ -49,7 +50,7 @@ Description: ?DESCRIPTION?
  ?DESCRIPTION_LONG?
 
 "/>
-      <Item5 Name="lazpackager/deb/tpl_copyright" Value="Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+      <Item6 Name="lazpackager/deb/tpl_copyright" Value="Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Source: https://github.com/artem78/LmxConverter
 Upstream-Contact: ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>
 
@@ -57,7 +58,7 @@ Files: *
 Copyright: ?COPYRIGHT?
 License: GPL-3
 "/>
-      <Item6 Name="lazpackager/deb/tpl_rules" Value="#!/usr/bin/make -f
+      <Item7 Name="lazpackager/deb/tpl_rules" Value="#!/usr/bin/make -f
 
 ROOT = $(CURDIR)/debian/?PACKAGE_NAME?
 
@@ -91,9 +92,9 @@ override_dh_auto_install:
 %:
 	dh $@
 "/>
-      <Item7 Name="lazpackager/description" Value="Nokia landmarks converter"/>
-      <Item8 Name="lazpackager/description_long" Value="Tool for conversion between Nokia landmark files (LMX) and other geographical formats"/>
-      <Item9 Name="lazpackager/export_cmd" Value="?CP? *.lpi ?TEMPFOLDER?/
+      <Item8 Name="lazpackager/description" Value="Nokia landmarks converter"/>
+      <Item9 Name="lazpackager/description_long" Value="Tool for conversion between Nokia landmark files (LMX) and other geographical formats"/>
+      <Item10 Name="lazpackager/export_cmd" Value="?CP? *.lpi ?TEMPFOLDER?/
 ?CP? *.lpr ?TEMPFOLDER?/
 ?CP? *.pas ?TEMPFOLDER?/
 ?CP? *.lfm ?TEMPFOLDER?/
@@ -103,9 +104,9 @@ override_dh_auto_install:
 mkdir -p ?TEMPFOLDER?/icons/
 ?CP? icons/*.png ?TEMPFOLDER?/icons/
 "/>
-      <Item10 Name="lazpackager/maintainer" Value="Artem Demin"/>
-      <Item11 Name="lazpackager/maintainer_email" Value="megabyte1024@ya.ru"/>
-      <Item12 Name="lazpackager/package_name" Value="lmxconverter"/>
+      <Item11 Name="lazpackager/maintainer" Value="Artem Demin"/>
+      <Item12 Name="lazpackager/maintainer_email" Value="megabyte1024@ya.ru"/>
+      <Item13 Name="lazpackager/package_name" Value="lmxconverter"/>
     </CustomData>
     <BuildModes Count="4">
       <Item1 Name="Default" Default="True"/>
