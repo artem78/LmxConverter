@@ -16,6 +16,7 @@ type
 
   TMainForm = class(TForm)
     AboutButton: TButton;
+    DeleteInputFileCheckBox: TCheckBox;
     SameDirUsedCheckBox: TCheckBox;
     OutputDirEdit: TDirectoryEdit;
     OutputDirLabel: TLabel;
@@ -28,6 +29,7 @@ type
     IniPropStorage: TIniPropStorage;
     procedure AboutButtonClick(Sender: TObject);
     procedure ConvertButtonClick(Sender: TObject);
+    procedure DeleteInputFileCheckBoxChange(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure InputFileNameEditButtonClick(Sender: TObject);
     procedure InputFileNameEditChange(Sender: TObject);
@@ -44,6 +46,8 @@ type
     procedure SetOutputDir(const ADir: String);
     function GetSameDirUsed: Boolean;
     procedure SetSameDirUsed(AVal: Boolean);
+    function GetDeleteInputFile: Boolean;
+    procedure SetDeleteInputFile(AVal: Boolean);
 
     procedure UseOutputDirFromInputFileName;
   public
@@ -51,6 +55,7 @@ type
     property OutputFormat: TOutputFormat read GetOutputFormat write SetOutputFormat;
     property OutputDir: String read GetOutputDir write SetOutputDir;
     property SameDirUsed: Boolean read GetSameDirUsed write SetSameDirUsed;
+    property DeleteInputFile: Boolean read GetDeleteInputFile write SetDeleteInputFile;
   end;
 
 var
@@ -151,6 +156,9 @@ begin
         SuccessMsg := Format('%d landmarks have been processed.',
                    [Converter.ProcessedLandmarks]);
         MessageDlg('Done!', SuccessMsg, mtInformation, [mbOK], 0);
+
+        if DeleteInputFile then
+          DeleteFile(InputFileName);
       end
       else
       begin
@@ -167,6 +175,11 @@ begin
   finally
     Converter.Free;
   end;
+end;
+
+procedure TMainForm.DeleteInputFileCheckBoxChange(Sender: TObject);
+begin
+  DeleteInputFile := DeleteInputFile; // Just for trigger save
 end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
@@ -201,6 +214,7 @@ begin
     OutputDir := '';
   //InputFileName := IniPropStorage.ReadString('lastInputFile', '');
   InputFileNameEdit.InitialDir := ExtractFileDir(IniPropStorage.ReadString('lastInputFile', ''));
+  DeleteInputFile := IniPropStorage.ReadBoolean('deleteInputFile', False);
 end;
 
 procedure TMainForm.InputFileNameEditButtonClick(Sender: TObject);
@@ -314,6 +328,18 @@ begin
 
   OutputDirEdit.Enabled := not AVal;
   UseOutputDirFromInputFileName;
+end;
+
+function TMainForm.GetDeleteInputFile: Boolean;
+begin
+  Result := DeleteInputFileCheckBox.Checked;
+end;
+
+procedure TMainForm.SetDeleteInputFile(AVal: Boolean);
+begin
+  DeleteInputFileCheckBox.Checked := AVal;
+
+  IniPropStorage.WriteBoolean('deleteInputFile', AVal);
 end;
 
 procedure TMainForm.UseOutputDirFromInputFileName;

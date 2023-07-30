@@ -1,11 +1,11 @@
 object MainForm: TMainForm
   Left = 357
-  Height = 195
+  Height = 216
   Top = 277
   Width = 686
   BorderStyle = bsDialog
   Caption = 'LMX Converter'
-  ClientHeight = 195
+  ClientHeight = 216
   ClientWidth = 686
   OnCreate = FormCreate
   Position = poScreenCenter
@@ -17,7 +17,7 @@ object MainForm: TMainForm
     AnchorSideRight.Side = asrCenter
     Left = 290
     Height = 25
-    Top = 152
+    Top = 176
     Width = 105
     Anchors = [akTop, akRight]
     Caption = 'Convert'
@@ -82,7 +82,7 @@ object MainForm: TMainForm
   object AboutButton: TButton
     Left = 568
     Height = 25
-    Top = 152
+    Top = 176
     Width = 108
     Caption = 'About...'
     OnClick = AboutButtonClick
@@ -133,11 +133,20 @@ object MainForm: TMainForm
     OnChange = SameDirUsedCheckBoxChange
     TabOrder = 4
   end
+  object DeleteInputFileCheckBox: TCheckBox
+    Left = 16
+    Height = 22
+    Top = 144
+    Width = 136
+    Caption = 'Delete original file'
+    OnChange = DeleteInputFileCheckBoxChange
+    TabOrder = 7
+  end
   object IniPropStorage: TIniPropStorage
     StoredValues = <>
     IniFileName = 'config.ini'
     IniSection = 'settings'
-    Left = 80
-    Top = 112
+    Left = 600
+    Top = 120
   end
 end
