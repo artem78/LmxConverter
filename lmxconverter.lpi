@@ -27,11 +27,28 @@
       <Item1 Name="lazpackager/copyright" Value="2020-2023, Artem Demin &lt;megabyte1024@ya.ru>"/>
       <Item2 Name="lazpackager/deb/ppa" Value="ppa:artem78/lmx-converter"/>
       <Item3 Name="lazpackager/deb/series" Value="precise"/>
-      <Item4 Name="lazpackager/deb/tpl_changelog" Value="?PACKAGE_NAME? (?FULLVERSION?) ?SERIES?; urgency=low
+      <Item4 Name="lazpackager/deb/tpl_changelog" Value="lmxconverter (1.4.2.0-1) precise; urgency=low
 
-  * Original version ?VERSION? packaged with lazdebian
+  * Fixed wrong target filename if it contains dots (example: &quot;landmarks 01.04.2023.lmx&quot; --> &quot;landmarks 01.04.gpx&quot;)
 
- -- ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>  ?DATER?
+ -- Artem Demin &lt;megabyte1024@ya.ru>  Tue, 04 Apr 2023 10:02:42 +0300
+
+lmxconverter (1.4.1.0-1) precise; urgency=low
+
+  * Fixed no action when &quot;Open folder&quot; button pressed in Linux
+
+ -- Artem Demin &lt;megabyte1024@ya.ru>  Tue, 18 Oct 2022 11:11:30 +0300
+
+lmxconverter (1.4.0.0-1) precise; urgency=low
+
+  * Added GeoJSON file format
+  * Added Linux OS support
+  * Write program name in Creator field to KML file
+  * Allow choosing output directory or use source directory
+  * Other UI improvements
+
+ -- Artem Demin &lt;megabyte1024@ya.ru>  Fri, 14 Oct 2022 21:12:10 +0300
+
 "/>
       <Item5 Name="lazpackager/deb/tpl_control" Value="Source: ?PACKAGE_NAME?
 Maintainer: ?MAINTAINER? &lt;?MAINTAINER_EMAIL?>
