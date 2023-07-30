@@ -19,15 +19,21 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
-      <MinorVersionNr Value="4"/>
-      <RevisionNr Value="2"/>
-      <StringTable ProductVersion="1.4.2"/>
+      <MinorVersionNr Value="5"/>
+      <StringTable ProductVersion="1.5"/>
     </VersionInfo>
     <CustomData Count="14">
       <Item1 Name="lazpackager/copyright" Value="2020-2023, Artem Demin &lt;megabyte1024@ya.ru>"/>
       <Item2 Name="lazpackager/deb/ppa" Value="ppa:artem78/lmx-converter"/>
       <Item3 Name="lazpackager/deb/series" Value="precise"/>
-      <Item4 Name="lazpackager/deb/tpl_changelog" Value="lmxconverter (1.4.2.0-1) precise; urgency=low
+      <Item4 Name="lazpackager/deb/tpl_changelog" Value="lmxconverter (1.5.0.0-1) precise; urgency=low
+
+  * Fixed icon paths in DEB package for Linux
+  * Added option for source file deletion
+
+ -- Artem Demin &lt;megabyte1024@ya.ru>  Sun, 30 Jul 2023 20:28:03 +0300
+
+lmxconverter (1.4.2.0-1) precise; urgency=low
 
   * Fixed wrong target filename if it contains dots (example: &quot;landmarks 01.04.2023.lmx&quot; --> &quot;landmarks 01.04.gpx&quot;)
 
