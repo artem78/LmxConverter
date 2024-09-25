@@ -168,8 +168,12 @@ begin
     except
       on E: Exception do
       begin
-        FailMessage := 'Failed!';
-        MessageDlg(FailMessage, mtError, [mbOK], 0);
+        {$IFDEF DEBUGINFO}
+        FailMessage := DumpExceptionCallStack(E);
+        {$Else}
+        FailMessage := E.ToString;
+        {$EndIf}
+        MessageDlg('Landmarks converting failed!', FailMessage, mtError, [mbOK], 0);
       end;
     end;
   finally

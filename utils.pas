@@ -9,6 +9,7 @@ uses
 
 function ProgramVersionStr: String;
 function CreateUniqueFileName(const AFileName, ADir: String): String;
+function DumpExceptionCallStack(E: Exception): String;
 
 implementation
 
@@ -47,6 +48,28 @@ begin
   until not FileExists(ConcatPaths([ADir, NewFileName]));
 
   Result := NewFileName;
+end;
+
+function DumpExceptionCallStack(E: Exception): String;
+// https://wiki.freepascal.org/Logging_exceptions#Dump_exception_call_stack
+var
+  I: Integer;
+  Frames: PPointer;
+  Report: string;
+begin
+  Report := {'Program exception! ' + LineEnding +
+    'Stacktrace:' + LineEnding + LineEnding} '';
+  if E <> nil then begin
+    Report := {Report + 'Exception class: ' + E.ClassName + LineEnding +
+    'Message: ' + E.Message + LineEnding} E.ToString + LineEnding + LineEnding;
+  end;
+  Report := Report + BackTraceStrFunc(ExceptAddr);
+  Frames := ExceptFrames;
+  for I := 0 to ExceptFrameCount - 1 do
+    Report := Report + LineEnding + BackTraceStrFunc(Frames[I]);
+  //ShowMessage(Report);
+  Result := Report;
+  //Halt; // End of program execution
 end;
 
 end.
