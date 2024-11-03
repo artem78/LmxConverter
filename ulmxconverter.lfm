@@ -29,14 +29,14 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrCenter
     Left = 16
     Height = 16
-    Top = 20
+    Top = 21
     Width = 86
     Caption = 'Landmark file:'
     ParentColor = False
   end
   object InputFileNameEdit: TFileNameEdit
     Left = 128
-    Height = 25
+    Height = 26
     Top = 16
     Width = 544
     DialogTitle = 'Choose landmark file'
@@ -93,14 +93,14 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrCenter
     Left = 16
     Height = 16
-    Top = 84
+    Top = 85
     Width = 104
     Caption = 'Output directory:'
     ParentColor = False
   end
   object OutputDirEdit: TDirectoryEdit
     Left = 128
-    Height = 25
+    Height = 26
     Top = 80
     Width = 440
     DialogTitle = 'Choose output directory'
@@ -118,7 +118,7 @@ object MainForm: TMainForm
     AnchorSideTop.Side = asrCenter
     Left = 577
     Height = 25
-    Top = 80
+    Top = 81
     Width = 99
     Caption = 'Open folder'
     OnClick = OpenOutputDirButtonClick

@@ -310,7 +310,7 @@ mkdir -p ?TEMPFOLDER?/icons/
     </Linking>
   </CompilerOptions>
   <Debugging>
-    <Exceptions Count="3">
+    <Exceptions Count="5">
       <Item1>
         <Name Value="EAbort"/>
       </Item1>
@@ -320,6 +320,12 @@ mkdir -p ?TEMPFOLDER?/icons/
       <Item3>
         <Name Value="EFOpenError"/>
       </Item3>
+      <Item4>
+        <Name Value="EObjectCheck"/>
+      </Item4>
+      <Item5>
+        <Name Value="RunError(210)"/>
+      </Item5>
     </Exceptions>
   </Debugging>
 </CONFIG>
